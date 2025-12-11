@@ -508,4 +508,19 @@ label {
     }
 }
 
+@media (max-width: 768px) {
+    .sidebar {
+        position: relative !important;
+        width: 100% !important;
+        height: auto !important;
+        margin: 0;
+        padding: 1rem !important;
+    }
+
+    .main-content {
+        margin-left: 0 !important;
+        padding: 1rem !important;
+            
+    }
+}
 
