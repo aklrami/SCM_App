@@ -324,7 +324,7 @@ label {
     flex-grow: 1;
     animation: fadeIn 0.5s ease-in-out;
     overflow-y: auto; /* Allow vertical scroll only for main content */
-    max-height: calc(100vh - YOUR_HEADER_HEIGHT_IF_ANY - YOUR_FOOTER_HEIGHT_IF_ANY); /* Adjust if you have fixed header/footer */
+    max-height: 100vh;
 }
 
 /* Header (if used above main content, not part of sidebar) */
@@ -434,7 +434,78 @@ label {
 .dashboard-card .card-text a:hover {
     transform: translateX(5px);
 }
-
 /* Add class .dashboard-card to the cards in dashboard_placeholder.html */
+/* --- Responsive layout tweaks --- */
+
+/* Medium screens: slightly adjust layout */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 220px;
+    }
+
+    .main-content {
+        margin-left: 220px;
+    }
+}
+
+/* Small screens (phones): sidebar becomes top bar, content full-width */
+@media (max-width: 768px) {
+    body {
+        height: auto; /* allow page to be taller than the screen */
+        overflow-y: auto; /* allow scrolling */
+        overflow-x: hidden;
+        display: block; /* remove flex body on very small screens */
+    }
+
+    .sidebar {
+        position: static; /* no fixed sidebar */
+        width: 100%;
+        height: auto;
+        box-shadow: none;
+        padding: 0.75rem 1rem;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+        .sidebar h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .sidebar ul {
+            list-style: none;
+            padding-left: 0;
+            margin: 0.5rem 0 0 0;
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap; /* menu can wrap to multiple lines */
+            gap: 0.25rem;
+        }
+
+            .sidebar ul li {
+                flex: 1 1 50%; /* two columns of items on phones */
+            }
+
+                .sidebar ul li a {
+                    display: block;
+                    width: 100%;
+                    padding: 0.4rem 0.5rem;
+                    font-size: 0.85rem;
+                    text-align: left;
+                }
+
+    .main-content {
+        margin-left: 0; /* no sidebar offset */
+        padding: 0.75rem;
+        max-height: none; /* remove the calc(...) limit for mobile */
+        overflow-y: visible;
+    }
+
+    .footer {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        text-align: center;
+    }
+}
 
 
