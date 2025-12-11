@@ -32,11 +32,55 @@ body {
     overflow-x: hidden; /* prevent horizontal scroll */
 }
 
+/* Wrapper for sidebar + main content (desktop) */
+.layout-wrapper {
+    display: flex;
+    min-height: 100vh;
+}
+
 .container {
     width: 90%;
     max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
+}
+
+/* =====================
+   Topbar (mobile header)
+   ===================== */
+
+/* Hidden on desktop by default; shown on mobile via media query */
+.topbar {
+    display: none;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 0 1rem;
+    height: 56px;
+    background-color: #343a40;
+    color: #fff;
+    z-index: 1050;
+}
+
+.topbar-menu-btn {
+    border: none;
+    background: none;
+    color: #fff;
+    font-size: 1.6rem;
+    line-height: 1;
+    margin-right: 0.75rem;
+    cursor: pointer;
+}
+
+.topbar-brand {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1rem;
+}
+
+/* Overlay for mobile sidebar */
+.sidebar-overlay {
+    display: none;
 }
 
 /* ===============
@@ -303,6 +347,8 @@ label {
 
     .sidebar h3 a {
         transition: color 0.2s ease-in-out;
+        color: #fff;
+        text-decoration: none;
     }
 
         .sidebar h3 a:hover {
@@ -510,57 +556,37 @@ label {
    Mobile hamburger layout
    ============================ */
 
-/* default: hide mobile header & overlay on desktop */
-.mobile-header {
-    display: none;
-}
-
-.sidebar-overlay {
-    display: none;
-}
-
 @media (max-width: 768px) {
 
-    /* Let the page scroll naturally on phones */
+    /* Enable normal page scrolling on mobile */
     body {
         display: block;
         height: auto;
         overflow-y: auto;
         overflow-x: hidden;
-        padding-top: 56px; /* space for mobile header */
     }
 
-    /* Mobile top bar */
-    .mobile-header {
+    /* Show topbar (hamburger + brand) only on mobile */
+    .topbar {
+        display: flex;
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
-        height: 56px;
-        background-color: #343a40;
-        color: #fff;
-        display: flex;
-        align-items: center;
-        padding: 0 1rem;
-        z-index: 1050;
     }
 
-    .mobile-menu-btn {
-        background: none;
-        border: none;
-        color: #fff;
-        font-size: 1.5rem;
-        margin-right: 0.75rem;
+    /* Push content below the topbar */
+    body {
+        padding-top: 56px; /* height of .topbar */
     }
 
-    .mobile-brand {
-        font-weight: 600;
-        font-size: 1rem;
+    .layout-wrapper {
+        display: block;
     }
 
     /* Sidebar becomes off-canvas drawer */
     .sidebar {
-        top: 56px;
+        top: 56px; /* under topbar */
         height: calc(100vh - 56px);
         transform: translateX(-100%);
         transition: transform 0.25s ease-in-out;
@@ -571,21 +597,21 @@ label {
     /* Overlay behind sidebar */
     .sidebar-overlay {
         position: fixed;
-        inset: 0;
+        inset: 56px 0 0 0; /* below topbar */
         background: rgba(0, 0, 0, 0.4);
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.2s ease-in-out;
-        z-index: 1030;
         display: block;
+        z-index: 1030;
     }
 
     /* When body has .sidebar-open, show menu + overlay */
-    .sidebar-open .sidebar {
+    body.sidebar-open .sidebar {
         transform: translateX(0);
     }
 
-    .sidebar-open .sidebar-overlay {
+    body.sidebar-open .sidebar-overlay {
         opacity: 1;
         pointer-events: auto;
     }
@@ -597,6 +623,12 @@ label {
         height: auto;
         max-height: none;
         overflow: visible;
+    }
+
+    .footer {
+        padding: 0.5rem;
+        font-size: 0.8rem;
+        text-align: center;
     }
 
     /* Slightly smaller tables for mobile */

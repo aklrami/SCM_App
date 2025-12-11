@@ -1048,9 +1048,10 @@ def remove_from_cart(product_id):
         flash("Could not remove item.", "danger")
     return redirect(url_for("frontend.view_cart"))
 
-@frontend_bp.route("/cart/clear", methods=["POST"])
+@frontend_bp.route("/cart/clear")
 @login_required
 def clear_cart():
+    # Clear the cart stored in the session
     session.pop("cart", None)
     session.modified = True
     flash("Cart cleared.", "info")

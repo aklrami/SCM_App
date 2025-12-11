@@ -1,4 +1,3 @@
-
 console.log("app.js loaded");
 
 document.addEventListener("DOMContentLoaded", function () {

@@ -1,6 +1,5 @@
 {% extends "base.html" %}
 
-
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
@@ -9,7 +8,8 @@
         <div class="col-md-8">
             <h2>{{ legend }}</h2>
             <hr>
-            <form method="POST" action="{{ url_for('frontend.place_order') }}" novalidate>               {{ checkout_form.hidden_tag() }} {# CSRF token #}
+            <form method="POST" action="{{ url_for('frontend.place_order') }}" novalidate>
+                {{ checkout_form.hidden_tag() }} {# CSRF token #}
                 
                 <fieldset class="form-group mb-3">
                     <legend class="border-bottom mb-3">Order Information</legend>
@@ -46,21 +46,23 @@
                             </div>
                         {% endif %}
                     </div>
-                    {# Add Order Category Field #}
+                    {# Order Category Field #}
                     {% if checkout_form.order_category_id.choices %}
                         <div class="mb-3">
-                        {{ checkout_form.order_category_id.label(class="form-label") }}
-                        {{ checkout_form.order_category_id(class="form-select") }}
-                        {% if checkout_form.order_category_id.errors %}
-                            <div class="invalid-feedback d-block">
-                                {% for error in checkout_form.order_category_id.errors %}
-                                    <span>{{ error }}</span><br>
-                                {% endfor %}
-                            </div>
-                        {% endif %}
-                    </div>
+                            {{ checkout_form.order_category_id.label(class="form-label") }}
+                            {{ checkout_form.order_category_id(class="form-select") }}
+                            {% if checkout_form.order_category_id.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in checkout_form.order_category_id.errors %}
+                                        <span>{{ error }}</span><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
                     {% else %}
-                        <div class="alert alert-info">No order categories available. Please contact an administrator to add categories.</div>
+                        <div class="alert alert-info">
+                            No order categories available. Please contact an administrator to add categories.
+                        </div>
                     {% endif %}
                 </fieldset>
 
@@ -83,7 +85,9 @@
                             </div>
                             <div class="d-flex align-items-center">
                                 <span class="me-3">${{ "%.2f"|format(item.subtotal) }}</span>
-                                <form method="POST" action="{{ url_for('frontend.remove_from_cart', product_id=item.product_id) }}" style="display: inline;">
+                                <form method="POST"
+                                      action="{{ url_for('frontend.remove_from_cart', product_id=item.product_id) }}"
+                                      style="display: inline;">
                                     {{ remove_form.hidden_tag() }}
                                     <button type="submit" class="btn btn-danger btn-sm">&times;</button>
                                 </form>
@@ -95,9 +99,13 @@
                     <strong>Grand Total:</strong>
                     <strong>${{ "%.2f"|format(grand_total) }}</strong>
                 </div>
-                <form method="POST" action="{{ url_for('frontend.clear_cart') }}">
-                    <button type="submit" class="btn btn-warning btn-sm w-100">Clear Cart</button>
-                </form>
+
+                {# ✅ Clear cart now uses GET, no CSRF #}
+                <a href="{{ url_for('frontend.clear_cart') }}"
+                   class="btn btn-warning btn-sm w-100"
+                   onclick="return confirm('Are you sure you want to clear the entire cart?');">
+                    Clear Cart
+                </a>
             {% else %}
                 <p>Your cart is empty.</p>
             {% endif %}
@@ -115,7 +123,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if (addToCartBtn && addItemFormEl && productIdField) {
         addToCartBtn.addEventListener('click', function() {
-            // Set the form action dynamically based on selected product ID
             const selectedProductId = productIdField.value;
             if (selectedProductId) {
                 addItemFormEl.action = "{{ url_for('frontend.add_to_cart', product_id=0) }}".replace('0', selectedProductId);
@@ -130,4 +137,3 @@ document.addEventListener('DOMContentLoaded', function() {
 {% endblock %}
 
 {% endblock %}
-
