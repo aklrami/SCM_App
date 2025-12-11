@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - SCM Pro{% endblock %}
+
+{% block page_title %}{{ title }} for Order #{{ order.id }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Update Status for Order #{{ order.id }}</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Customer:</strong> {{ order.customer_name or order.placer.username }}</p>
+                    <p><strong>Order Date:</strong> {{ order.order_date.strftime("%Y-%m-%d %H:%M") }}</p>
+                    <p><strong>Current Status:</strong> <span class="badge bg-info">{{ order.status }}</span></p>
+                    
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        <fieldset class="mb-3">
+                            <div class="mb-3">
+                                {{ form.status.label(class="form-label") }}
+                                {% if form.status.errors %}
+                                    {{ form.status(class="form-select is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.status.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.status(class="form-select") }}
+                                {% endif %}
+                            </div>
+                        </fieldset>
+                        <div class="form-group mb-3">
+                            {{ form.submit(class="btn btn-primary") }}
+                            <a href="{{ url_for('frontend.view_order_details', order_id=order.id) }}" class="btn btn-secondary ms-2">Cancel</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

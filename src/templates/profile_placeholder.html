@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile - SCM Pro{% endblock %}
+
+{% block page_title %}Your Profile{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <div class="card mb-4 dashboard-card">
+                <div class="card-header">
+                    <h3>User Profile Information</h3>
+                </div>
+                <div class="card-body">
+                    {% if current_user and current_user.is_authenticated %}
+                        <p><strong>Username:</strong> {{ current_user.username }}</p>
+                        <p><strong>Email:</strong> {{ current_user.email }}</p>
+                        <p><strong>Account Created:</strong> {{ current_user.date_created.strftime("%Y-%m-%d %H:%M:%S") if current_user.date_created else "N/A" }} UTC</p>
+                        
+                        <h4 class="mt-4">Update Profile</h4>
+                        <form method="POST" action="{{ url_for("frontend.profile") }}"> <!-- Update action if a separate update route is made -->
+                            {# Add Flask-WTF form fields here for profile updates if needed #}
+                            {# Example: 
+                            {{ form.hidden_tag() if form }}
+                            <div class="form-group mb-3">
+                                <label for="username_update">Username</label>
+                                <input type="text" class="form-control" id="username_update" name="username_update" value="{{ current_user.username }}">
+                            </div>
+                            <div class="form-group mb-3">
+                                <label for="email_update">Email</label>
+                                <input type="email" class="form-control" id="email_update" name="email_update" value="{{ current_user.email }}">
+                            </div>
+                            <button type="submit" class="btn btn-primary">Update Profile</button> 
+                            #}
+                            <p class="text-muted"><em>Profile update functionality is a placeholder.</em></p>
+                        </form>
+
+                        <h4 class="mt-4">Change Password</h4>
+                        <form method="POST" action="#"> <!-- Placeholder for change password route -->
+                             <p class="text-muted"><em>Password change functionality is a placeholder.</em></p>
+                            {# Add Flask-WTF form fields here for password change #}
+                            {# <button type="submit" class="btn btn-warning">Change Password</button> #}
+                        </form>
+                    {% else %}
+                        <p>You are not logged in.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

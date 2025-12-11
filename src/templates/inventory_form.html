@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - SCM Pro{% endblock %}
+
+{% block page_title %}{{ legend }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>{{ legend }}</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="">
+                        {{ form.hidden_tag() }}
+                        <fieldset class="mb-3">
+                            {% if form.product_id %}
+                                <div class="mb-3">
+                                    {{ form.product_id.label(class="form-label") }}
+                                    {% if form.product_id.errors %}
+                                        {{ form.product_id(class="form-select is-invalid") }}
+                                        <div class="invalid-feedback">
+                                            {% for error in form.product_id.errors %}
+                                                <span>{{ error }}</span>
+                                            {% endfor %}
+                                        </div>
+                                    {% else %}
+                                        {{ form.product_id(class="form-select") }}
+                                    {% endif %}
+                                    {% if not form.product_id.choices and legend == "New Inventory Item" %}
+                                    <small class="form-text text-muted">                                        No products available to add to inventory. Please <a href="{{ url_for('frontend.add_product') }}">add a product</a> first, or ensure existing products are not already in inventory.                               </small>
+                                    {% endif %}
+                                </div>
+                            {% elif inventory_item %}
+                                <div class="mb-3">
+                                    <label class="form-label">Product</label>
+                                    <input type="text" readonly class="form-control-plaintext" value="{{ inventory_item.product.name }} (SKU: {{ inventory_item.product.sku }})">
+                                </div>
+                            {% endif %}
+
+                            <div class="mb-3">
+                                {{ form.quantity_on_hand.label(class_="form-label", text="Quantity on Hand (Quantity Inventory)") if current_user.is_supplier else form.quantity_on_hand.label(class_="form-label") }}
+                                {% if form.quantity_on_hand.errors %}
+                                    {{ form.quantity_on_hand(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.quantity_on_hand.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.quantity_on_hand(class="form-control") }}
+                                {% endif %}
+                            </div>
+
+                            {% if form.low_stock_threshold %}
+                            <div class="mb-3">
+                                {{ form.low_stock_threshold.label(class="form-label") }}
+                                {% if form.low_stock_threshold.errors %}
+                                    {{ form.low_stock_threshold(class="form-control is-invalid") }}
+                                    <div class="invalid-feedback">
+                                        {% for error in form.low_stock_threshold.errors %}
+                                            <span>{{ error }}</span>
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    {{ form.low_stock_threshold(class="form-control") }}
+                                {% endif %}
+                            </div>
+                            {% endif %}
+
+                        </fieldset>
+                        <div class="form-group mb-3">
+                            {{ form.submit(class="btn btn-primary") }}
+                            <a href="{{ url_for('frontend.view_inventory') }}" class="btn btn-secondary ms-2">Cancel</a>                     </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

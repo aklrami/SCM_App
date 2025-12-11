@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>supply_chain_frontend - API Test</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; background-color: #f8f9fa; }
+        .container { max-width: 800px; margin: auto; background-color: #fff; padding: 20px; border-radius: 8px; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        .section { margin-bottom: 25px; padding: 20px; border: 1px solid #dee2e6; border-radius: 5px; background-color: #f8f9fa; }
+        h1 { text-align: center; margin-bottom: 30px; color: #343a40; }
+        h2 { margin-top: 0; margin-bottom: 15px; color: #495057; border-bottom: 1px solid #ced4da; padding-bottom: 5px; }
+        label { display: inline-block; width: 100px; margin-bottom: 8px; font-weight: bold; color: #495057; }
+        input[type="text"], input[type="email"], input[type="number"] { margin-bottom: 15px; padding: 8px; width: calc(100% - 110px); border: 1px solid #ced4da; border-radius: 4px; }
+        button { padding: 10px 18px; margin-right: 10px; cursor: pointer; background-color: #0d6efd; color: white; border: none; border-radius: 4px; transition: background-color 0.2s; }
+        button:hover { background-color: #0b5ed7; }
+        pre { background-color: #e9ecef; padding: 15px; border: 1px solid #ced4da; border-radius: 4px; white-space: pre-wrap; word-wrap: break-word; font-size: 0.9em; color: #212529; margin-top: 15px; }
+        .error { color: #dc3545; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>User API Test Interface</h1>
+
+        <div class="section">
+            <h2>Get All Users (GET /api/users)</h2>
+            <button onclick="getUsers()">Get Users</button>
+            <pre id="get-users-result"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Create User (POST /api/users)</h2>
+            <label for="create-username">Username:</label>
+            <input type="text" id="create-username" name="username"><br>
+            <label for="create-email">Email:</label>
+            <input type="email" id="create-email" name="email"><br>
+            <button onclick="createUser()">Create User</button>
+            <pre id="create-user-result"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Get Single User (GET /api/users/&lt;id&gt;)</h2>
+            <label for="get-user-id">User ID:</label>
+            <input type="number" id="get-user-id" name="user_id"><br>
+            <button onclick="getUser()">Get User</button>
+            <pre id="get-user-result"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Update User (PUT /api/users/&lt;id&gt;)</h2>
+            <label for="update-user-id">User ID:</label>
+            <input type="number" id="update-user-id" name="user_id"><br>
+            <label for="update-username">New Username:</label>
+            <input type="text" id="update-username" name="username"><br>
+            <label for="update-email">New Email:</label>
+            <input type="email" id="update-email" name="email"><br>
+            <button onclick="updateUser()">Update User</button>
+            <pre id="update-user-result"></pre>
+        </div>
+
+        <div class="section">
+            <h2>Delete User (DELETE /api/users/&lt;id&gt;)</h2>
+            <label for="delete-user-id">User ID:</label>
+            <input type="number" id="delete-user-id" name="user_id"><br>
+            <button onclick="deleteUser()">Delete User</button>
+            <pre id="delete-user-result"></pre>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 
+
+        function displayResult(elementId, data) {
+            const preElement = document.getElementById(elementId);
+            preElement.textContent = JSON.stringify(data, null, 2);
+            preElement.classList.remove("error");
+        }
+
+        function displayError(elementId, error) {
+            const preElement = document.getElementById(elementId);
+            preElement.textContent = `Error: ${error.message || error}`;
+            preElement.classList.add("error");
+        }
+
+        async function getUsers() {
+            const resultElementId = "get-users-result";
+            try {
+                const response = await fetch(API_BASE_URL);
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                displayResult(resultElementId, data);
+            } catch (error) {
+                displayError(resultElementId, error);
+            }
+        }
+
+        async function createUser() {
+            const resultElementId = "create-user-result";
+            const username = document.getElementById("create-username").value;
+            const email = document.getElementById("create-email").value;
+            if (!username || !email) {
+                displayError(resultElementId, "Username and email cannot be empty");
+                return;
+            }
+            try {
+                const response = await fetch(API_BASE_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ username, email })
+                });
+                const data = await response.json();
+                if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                displayResult(resultElementId, data);
+                document.getElementById("create-username").value = "";
+                document.getElementById("create-email").value = "";
+            } catch (error) {
+                displayError(resultElementId, error);
+            }
+        }
+
+        async function getUser() {
+            const resultElementId = "get-user-result";
+            const userId = document.getElementById("get-user-id").value;
+            if (!userId) {
+                displayError(resultElementId, "User ID cannot be empty");
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/${userId}`);
+                 if (response.status === 404) throw new Error("User not found");
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                const data = await response.json();
+                displayResult(resultElementId, data);
+            } catch (error) {
+                displayError(resultElementId, error);
+            }
+        }
+
+        async function updateUser() {
+            const resultElementId = "update-user-result";
+            const userId = document.getElementById("update-user-id").value;
+            const username = document.getElementById("update-username").value;
+            const email = document.getElementById("update-email").value;
+            if (!userId) {
+                displayError(resultElementId, "User ID cannot be empty");
+                return;
+            }
+            const updateData = {};
+            if (username) updateData.username = username;
+            if (email) updateData.email = email;
+            if (Object.keys(updateData).length === 0) {
+                 displayError(resultElementId, "Please enter a username or email to update");
+                 return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/${userId}`, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(updateData)
+                });
+                if (response.status === 404) throw new Error("User not found");
+                const data = await response.json();
+                 if (!response.ok) throw new Error(data.message || `HTTP error! status: ${response.status}`);
+                displayResult(resultElementId, data);
+                document.getElementById("update-username").value = "";
+                document.getElementById("update-email").value = "";
+            } catch (error) {
+                displayError(resultElementId, error);
+            }
+        }
+
+        async function deleteUser() {
+            const resultElementId = "delete-user-result";
+            const userId = document.getElementById("delete-user-id").value;
+            if (!userId) {
+                displayError(resultElementId, "User ID cannot be empty");
+                return;
+            }
+            try {
+                const response = await fetch(`${API_BASE_URL}/${userId}`, {
+                    method: "DELETE"
+                });
+                if (response.status === 404) throw new Error("User not found");
+                if (!response.ok && response.status !== 204) throw new Error(`HTTP error! status: ${response.status}`); 
+                if (response.status === 204) {
+                     displayResult(resultElementId, { message: `User ID ${userId} has been successfully deleted` });
+                } else {
+                     const data = await response.text();
+                     displayResult(resultElementId, data || { message: `Deletion successful, status code: ${response.status}` });
+                }
+                document.getElementById("delete-user-id").value = "";
+            } catch (error) {
+                displayError(resultElementId, error);
+            }
+        }
+    </script>
+</body>
+</html>

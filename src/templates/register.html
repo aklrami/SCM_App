@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+
+{% block title %}Register - SCM Pro{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="card dashboard-card">
+                <div class="card-header">
+                    <h3>Create SCM Pro Account</h3>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for("frontend.register") }}"> <!-- Assuming a register route -->
+                        {{ form.hidden_tag() if form else "" }} <!-- CSRF token if using Flask-WTF -->
+                        <div class="form-group mb-3">
+                            <label for="username">Username</label>
+                            <input type="text" class="form-control" id="username" name="username" required placeholder="Choose a username">
+                            <!-- Example: {{ form.username(class_="form-control", placeholder="Choose a username") if form }} -->
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="email">Email Address</label>
+                            <input type="email" class="form-control" id="email" name="email" required placeholder="Enter your email">
+                            <!-- Example: {{ form.email(class_="form-control", placeholder="Enter your email") if form }} -->
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="password">Password</label>
+                            <input type="password" class="form-control" id="password" name="password" required placeholder="Create a strong password">
+                            <!-- Example: {{ form.password(class_="form-control", placeholder="Create a strong password") if form }} -->
+                        </div>
+                        <div class="form-group mb-3">
+                            <label for="confirm_password">Confirm Password</label>
+                            <input type="password" class="form-control" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
+                            <!-- Example: {{ form.confirm_password(class_="form-control", placeholder="Confirm your password") if form }} -->
+                        </div>
+                        <button type="submit" class="btn btn-primary w-100">Register</button>
+                        <!-- Example: {{ form.submit(class_="btn btn-primary w-100") if form }} -->
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <p class="mb-0">Already have an account? <a href="{{ url_for("frontend.login") }}">Login here</a></p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

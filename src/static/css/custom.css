@@ -1,0 +1,132 @@
+/* Custom CSS for SCM Pro Frontend */
+
+:root {
+    --bs-primary-rgb: 6, 95, 212; /* Example: Bootstrap blue */
+    --bs-secondary-rgb: 108, 117, 125;
+    --bs-success-rgb: 25, 135, 84;
+    --bs-info-rgb: 13, 202, 240;
+    --bs-warning-rgb: 255, 193, 7;
+    --bs-danger-rgb: 220, 53, 69;
+    --bs-light-rgb: 248, 249, 250;
+    --bs-dark-rgb: 33, 37, 41;
+
+    /* Custom status colors */
+    --status-pending: #ffc107; /* Warning */
+    --status-processing: #0dcaf0; /* Info */
+    --status-shipped: #6f42c1; /* Custom purple */
+    --status-delivered: #198754; /* Success */
+    --status-cancelled: #6c757d; /* Secondary */
+    --status-low-stock: #fd7e14; /* Orange */
+    --status-ok: #198754; /* Success */
+}
+
+body {
+    font-family: "Inter", sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+.navbar-brand {
+    font-weight: 600;
+}
+
+.shadow-slight {
+    box-shadow: 0 .125rem .25rem rgba(0, 0, 0, .075)!important;
+}
+
+.card {
+    border: none; /* Remove default card border */
+}
+
+.card-header {
+    font-weight: 500;
+    background-color: rgba(var(--bs-dark-rgb), 0.03);
+    border-bottom: 1px solid rgba(var(--bs-dark-rgb), 0.125);
+}
+
+.table {
+    margin-bottom: 0; /* Remove margin when inside a card */
+}
+
+.table thead {
+    background-color: rgba(var(--bs-dark-rgb), 0.05);
+}
+
+.table th {
+    font-weight: 600;
+    color: var(--bs-dark);
+}
+
+.table-hover tbody tr:hover {
+    background-color: rgba(var(--bs-primary-rgb), 0.05);
+}
+
+/* Status Badges */
+.badge {
+    font-size: 0.8em;
+    padding: 0.4em 0.6em;
+}
+
+.bg-status-pending {
+    background-color: var(--status-pending) !important;
+    color: var(--bs-dark) !important; /* Better contrast */
+}
+.bg-status-processing {
+    background-color: var(--status-processing) !important;
+    color: var(--bs-dark) !important; /* Better contrast */
+}
+.bg-status-shipped {
+    background-color: var(--status-shipped) !important;
+}
+.bg-status-delivered {
+    background-color: var(--status-delivered) !important;
+}
+.bg-status-cancelled {
+    background-color: var(--status-cancelled) !important;
+}
+.bg-status-low-stock {
+    background-color: var(--status-low-stock) !important;
+    color: var(--bs-light) !important;
+}
+.bg-status-ok {
+    background-color: var(--status-ok) !important;
+}
+
+/* Modal Styling */
+.modal-header {
+    background-color: var(--bs-dark);
+    color: var(--bs-light);
+}
+
+.modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+/* Footer */
+.footer {
+    font-size: 0.9em;
+}
+
+/* Dashboard specific */
+#orderFulfillmentChart {
+    max-height: 250px; /* Limit chart height */
+}
+
+/* Responsive adjustments */
+@media (max-width: 767.98px) {
+    .display-5 {
+        font-size: 2.5rem;
+    }
+    .display-6 {
+        font-size: 2rem;
+    }
+    .h2 {
+        font-size: 1.75rem;
+    }
+}
+

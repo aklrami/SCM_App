@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - SCM Pro{% endblock %}
+
+{% block page_title %}Dashboard Overview{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Welcome to your SCM Pro Dashboard, {{ current_user.username if current_user and current_user.is_authenticated else "Guest" }}!
+                </div>
+                <div class="card-body">
+                    <p>This is your main dashboard. Key metrics and quick actions will be displayed here.</p>
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="card text-white bg-primary mb-3 dashboard-card">
+                                <div class="card-header">Active Orders</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">150</h5>
+                                    <a href="{{ url_for('frontend.view_orders') }}" class="text-white stretched-link text-decoration-none">View Details <i class="bi bi-arrow-right-circle-fill"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-white bg-success mb-3 dashboard-card">
+                                <div class="card-header">Inventory Status</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">Optimal</h5>                                    <a href="{{ url_for('frontend.view_inventory') }}" class="text-white stretched-link text-decoration-none">Manage Stock <i class="bi bi-arrow-right-circle-fill"></i></a>                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="card text-dark bg-warning mb-3 dashboard-card">
+                                <div class="card-header">Pending Shipments</div>
+                                <div class="card-body">
+                                    <h5 class="card-title">25</h5>
+                                    <a href="#" class="text-dark stretched-link text-decoration-none">Track Shipments <i class="bi bi-arrow-right-circle-fill"></i></a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <p>More dashboard widgets and features will be added here.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

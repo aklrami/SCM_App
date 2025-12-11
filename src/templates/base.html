@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}SCM Pro - Modern{% endblock %}</title>
+    <!-- Bootstrap CSS (keeping for grid system and some components, can be selectively removed later if custom_modern.css covers all) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <!-- Google Fonts (Inter - if Roboto is not preferred, or keep for fallback) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Custom Modern CSS -->
+    <link rel="stylesheet" href="{{ url_for("static", filename="css/custom_modern.css") }}">
+    {% block head_extra %}{% endblock %}
+</head>
+<body>
+    <div class="sidebar">
+        <h3><a href="{{ url_for("frontend.index") }}" style="color: #fff; text-decoration: none;"><i class="bi bi-box-seam-fill me-2"></i>SCM Pro</a></h3>
+        <ul>
+            <li><a href="{{ url_for("frontend.view_dashboard") }}" class="{% if request.endpoint == "frontend.view_dashboard" %}active{% endif %}"><i class="bi bi-grid-1x2-fill me-2"></i>Dashboard</a></li>
+            
+            {% if current_user.is_authenticated %}
+                {% if current_user.role == "admin" %}
+                    <li><a href="{{ url_for("frontend.view_suppliers") }}" class="{% if request.endpoint == "frontend.view_suppliers" %}active{% endif %}"><i class="bi bi-truck me-2"></i>Suppliers</a></li>
+                    <li><a href="{{ url_for("frontend.view_products") }}" class="{% if request.endpoint == "frontend.view_products" %}active{% endif %}"><i class="bi bi-boxes me-2"></i>Products</a></li>
+                    <li><a href="{{ url_for("frontend.view_inventory") }}" class="{% if request.endpoint == "frontend.view_inventory" %}active{% endif %}"><i class="bi bi-clipboard-data-fill me-2"></i>Inventory</a></li>
+                    <li><a href="{{ url_for("frontend.view_orders") }}" class="{% if request.endpoint == "frontend.view_orders" %}active{% endif %}"><i class="bi bi-card-list me-2"></i>Orders</a></li>
+                {% elif current_user.role == "supplier" %}
+                    <li><a href="{{ url_for("frontend.view_suppliers") }}" class="{% if request.endpoint == "frontend.view_suppliers" %}active{% endif %}"><i class="bi bi-truck me-2"></i>My Supplier Profile</a></li>
+                    <li><a href="{{ url_for("frontend.view_products") }}" class="{% if request.endpoint == "frontend.view_products" %}active{% endif %}"><i class="bi bi-boxes me-2"></i>My Products</a></li>
+                    <li><a href="{{ url_for("frontend.view_inventory") }}" class="{% if request.endpoint == "frontend.view_inventory" %}active{% endif %}"><i class="bi bi-clipboard-data-fill me-2"></i>My Inventory</a></li>
+                    <li><a href="{{ url_for("frontend.view_orders") }}" class="{% if request.endpoint == "frontend.view_orders" %}active{% endif %}"><i class="bi bi-card-list me-2"></i>Orders</a></li>
+                {% elif current_user.role == "user" %}
+                    {# General users see Inventory and Orders #}
+                    <li><a href="{{ url_for("frontend.view_inventory") }}" class="{% if request.endpoint == "frontend.view_inventory" %}active{% endif %}"><i class="bi bi-clipboard-data-fill me-2"></i>Inventory</a></li>
+                    <li><a href="{{ url_for("frontend.view_orders") }}" class="{% if request.endpoint == "frontend.view_orders" %}active{% endif %}"><i class="bi bi-card-list me-2"></i>Orders</a></li>
+                {% endif %}
+                
+                {% if current_user.role != "supplier" %}
+                    <li><a href="{{ url_for("frontend.shop_products") }}" class="{% if request.endpoint == "frontend.shop_products" %}active{% endif %}"><i class="bi bi-shop me-2"></i>Shop</a></li>
+                    <li><a href="{{ url_for("frontend.view_cart") }}" class="{% if request.endpoint == "frontend.view_cart" %}active{% endif %}"><i class="bi bi-cart-fill me-2"></i>Cart {% if session.get("cart") %}<span class="badge bg-danger ms-1">{{ session["cart"]|length }}</span>{% endif %}</a></li>
+                {% endif %}
+
+                <hr style="border-color: #495057;">
+                <li><a href="{{ url_for("frontend.profile") }}" class="{% if request.endpoint == "frontend.profile" %}active{% endif %}"><i class="bi bi-person-circle me-2"></i>Profile</a></li>
+                {% if current_user.role == "admin" %}
+                <li><a href="{{ url_for("frontend.manage_users") }}" class="{% if request.endpoint == "frontend.manage_users" %}active{% endif %}"><i class="bi bi-people-fill me-2"></i>Manage Users</a></li>
+                {% endif %}
+                <li><a href="{{ url_for("frontend.logout") }}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
+            {% else %} {# Not authenticated users #}
+                <li><a href="{{ url_for("frontend.login") }}" class="{% if request.endpoint == "frontend.login" %}active{% endif %}"><i class="bi bi-box-arrow-in-right me-2"></i>Login</a></li>
+                <li><a href="{{ url_for("frontend.register") }}" class="{% if request.endpoint == "frontend.register" %}active{% endif %}"><i class="bi bi-person-plus-fill me-2"></i>Register</a></li>
+            {% endif %}
+        </ul>
+    </div>
+
+    <div class="main-content">
+        <main class="container-fluid mt-3">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+            {% block content %}{% endblock %}
+        </main>
+
+        <footer class="footer">
+            <div class="container-fluid text-center">
+                <span>SCM Pro &copy; {{ current_year if current_year else 2025 }}. Modernized for Thesis Project.</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+    <!-- Axios (for API calls) -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <!-- Custom JS (app.js might need updates for new auth links) -->
+    <script src="{{ url_for("static", filename="js/app.js") }}"></script>
+    {% block scripts_extra %}{% endblock %}
+</body>
+</html>
+
+

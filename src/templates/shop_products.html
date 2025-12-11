@@ -1,0 +1,86 @@
+{% extends "base.html" %}
+
+{% block title %}Shop Products - SCM Pro{% endblock %}
+
+{% block page_title %}Browse Products{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row mb-3">
+        <div class="col-md-12">
+            <form method="GET" action="{{ url_for('frontend.shop_products') }}" class="row g-3 align-items-center">
+                <div class="col-md-10">
+                    <input type="text" name="search" class="form-control" placeholder="Search products by name..." value="{{ search_term or '' }}">
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-primary w-100">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        {% if products_pagination.items %}
+            {% for product in products_pagination.items %}
+            <div class="col-md-4 mb-4">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <h5 class="card-title">{{ product.name }}</h5>
+                        <h6 class="card-subtitle mb-2 text-muted">SKU: {{ product.sku }}</h6>
+                        <p class="card-text">{{ product.description|truncate(100, True) if product.description else 'No description available.' }}</p>
+                        <p class="card-text"><strong>Price:</strong> ${{ "%.2f"|format(product.price) }}</p>
+                        <p class="card-text"><strong>Available Quantity:</strong> {{ product.inventory_item.quantity_on_hand if product.inventory_item else 0 }}</p>
+                        <p class="card-text"><small class="text-muted">Category: {{ product.category or "N/A" }}</small></p>
+                        <p class="card-text"><small class="text-muted">Supplier: {{ product.supplier.name if product.supplier else 'N/A' }}</small></p>
+                        
+                        <form method="POST" action="{{ url_for('frontend.add_to_cart', product_id=product.id) }}" class="mt-auto">
+                            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                            <div class="input-group">
+                                <input type="number" name="quantity" class="form-control" value="1" min="1">
+                                <button type="submit" class="btn btn-success">Add to Cart</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        {% else %}
+            <div class="col-12">
+                <div class="alert alert-info" role="alert">
+                    No products found. {% if search_term %}Try a different search term or <a href="{{ url_for('frontend.shop_products') }}">clear the search</a>.{% endif %}
+                </div>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if products_pagination.pages > 1 %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if products_pagination.has_prev %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('frontend.shop_products', page=products_pagination.prev_num, search=search_term) }}">Previous</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Previous</span></li>
+            {% endif %}
+            {% for page_num in products_pagination.iter_pages() %}
+                {% if page_num %}
+                    {% if products_pagination.page == page_num %}
+                        <li class="page-item active"><span class="page-link">{{ page_num }}</span></li>
+                    {% else %}
+                        <li class="page-item"><a class="page-link" href="{{ url_for('frontend.shop_products', page=page_num, search=search_term) }}">{{ page_num }}</a></li>
+                    {% endif %}
+                {% else %}
+                    <li class="page-item disabled"><span class="page-link">...</span></li>
+                {% endif %}
+            {% endfor %}
+            {% if products_pagination.has_next %}
+                <li class="page-item"><a class="page-link" href="{{ url_for('frontend.shop_products', page=products_pagination.next_num, search=search_term) }}">Next</a></li>
+            {% else %}
+                <li class="page-item disabled"><span class="page-link">Next</span></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}
+
+

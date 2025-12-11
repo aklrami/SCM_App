@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}Product Form{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ legend }}</h2>
+    <form method="POST" action="">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.name.label(class="form-label") }}
+            {% if form.name.errors %}
+                {{ form.name(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.name(class="form-control") }}
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.sku.label(class="form-label") }}
+            {% if form.sku.errors %}
+                {{ form.sku(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.sku.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.sku(class="form-control") }}
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.description.label(class="form-label") }}
+            {{ form.description(class="form-control", rows=3) }}
+        </div>
+        <hr>
+        <h5>Category</h5>
+        <div class="mb-3">
+            {{ form.product_category_id.label(class="form-label") }} <small class="text-muted">(Select an existing category)</small>
+            {% if form.product_category_id.errors %}
+                {{ form.product_category_id(class="form-select is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.product_category_id.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.product_category_id(class="form-select") }}
+            {% endif %}
+        </div>
+        <p class="text-center my-2">OR</p>
+        <div class="mb-3">
+            {{ form.new_category_name.label(class="form-label") }} <small class="text-muted">(Create a new category if not listed above)</small>
+            {% if form.new_category_name.errors %}
+                {{ form.new_category_name(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.new_category_name.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.new_category_name(class="form-control") }}
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.new_category_description.label(class="form-label") }} <small class="text-muted">(Optional description for new category)</small>
+            {{ form.new_category_description(class="form-control", rows=2) }}
+        </div>
+        <hr>
+        <div class="mb-3">
+            {{ form.price.label(class="form-label") }}
+            {% if form.price.errors %}
+                {{ form.price(class="form-control is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.price.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.price(class="form-control") }}
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.supplier_id.label(class="form-label") }}
+            {% if form.supplier_id.errors %}
+                {{ form.supplier_id(class="form-select is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.supplier_id.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.supplier_id(class="form-select") }}
+            {% endif %}
+        </div>
+        <div class="mb-3">
+            {{ form.submit(class="btn btn-primary") }}
+        </div>
+    </form>
+</div>
+{% endblock %}
+

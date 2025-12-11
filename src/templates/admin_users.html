@@ -1,0 +1,99 @@
+{% extends "base.html" %}
+
+{% block title %}Manage Users - SCM Pro{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">User Management</h1>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Username</th>
+                <th>Email</th>
+                <th>Role</th>
+                <th>Status</th>
+                <th>Date Created</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for user_item in users %}
+            <tr>
+                <td>{{ user_item.id }}</td>
+                <td>{{ user_item.username }}</td>
+                <td>{{ user_item.email }}</td>
+                <td>{{ user_item.role|capitalize }}</td>
+                <td>
+                    {% if user_item.is_active %}
+                        <span class="badge bg-success">Active</span>
+                    {% else %}
+                        <span class="badge bg-warning text-dark">Pending Approval / Inactive</span>
+                    {% endif %}
+                </td>
+                <td>{{ user_item.date_created.strftime("%Y-%m-%d %H:%M") }}</td>
+                <td>
+                    <div class="btn-group" role="group" aria-label="User Actions">
+                        {% if not user_item.is_active %}
+                            <form action="{{ url_for("frontend.activate_user", user_id=user_item.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="btn btn-sm btn-success me-1">Activate</button>
+                            </form>
+                        {% else %}
+                            {% if user_item.id != current_user.id or not current_user.is_admin %}
+                            <form action="{{ url_for("frontend.deactivate_user", user_id=user_item.id) }}" method="POST" class="d-inline">
+                                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                <button type="submit" class="btn btn-sm btn-warning me-1">Deactivate</button>
+                            </form>
+                            {% endif %}
+                        {% endif %}
+
+                        {# Forms for changing roles #}
+                        {% if user_item.id != current_user.id %} {# Cannot change own role directly here #}
+                            {% if user_item.role != "admin" %}
+                                <form action="{{ url_for("frontend.set_user_role", user_id=user_item.id, new_role="admin") }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button type="submit" class="btn btn-sm btn-info me-1">Set Admin</button>
+                                </form>
+                            {% endif %}
+                            {% if user_item.role != "supplier" %}
+                                <form action="{{ url_for("frontend.set_user_role", user_id=user_item.id, new_role="supplier") }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button type="submit" class="btn btn-sm btn-primary me-1">Set Supplier</button>
+                                </form>
+                            {% endif %}
+                            {% if user_item.role != "user" %}
+                                <form action="{{ url_for("frontend.set_user_role", user_id=user_item.id, new_role="user") }}" method="POST" class="d-inline">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button type="submit" class="btn btn-sm btn-secondary">Set User</button>
+                                </form>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="7" class="text-center">No users found.</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% endblock %}
+

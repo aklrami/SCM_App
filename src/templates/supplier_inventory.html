@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ title }}</h2>
+    <p>Welcome, {{ current_user.username }} (Supplier: {{ supplier.name }})</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    {% if products_with_inventory %}
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Product Name</th>
+                    <th>SKU</th>
+                    <th>Current Quantity</th>
+                    <th>Reorder Level</th>
+                    <th>Location</th>
+                    <th>Last Updated</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for product, inventory_record in products_with_inventory %}
+                    <tr>
+                        <td>{{ product.name }}</td>
+                        <td>{{ product.sku }}</td>
+                        <td>{{ inventory_record.quantity_on_hand if inventory_record else 'N/A' }}</td>
+                        <td>{{ inventory_record.reorder_level if inventory_record else 'N/A' }}</td>
+                        <td>{{ inventory_record.location if inventory_record and inventory_record.location else 'N/A' }}</td>
+                        <td>{{ inventory_record.last_updated.strftime('%Y-%m-%d %H:%M:%S') if inventory_record else 'N/A' }}</td>
+                        <td>
+                            {% if inventory_record %}
+                                <a href="{{ url_for('frontend.edit_inventory_item', inventory_id=inventory_record.id) }}" class="btn btn-sm btn-info me-1">Edit Details</a>
+                                <a href="{{ url_for('frontend.adjust_stock', inventory_id=inventory_record.id) }}" class="btn btn-sm btn-warning">Adjust Stock</a>
+                            {% else %}
+                                <!-- Optionally, add a button to create an inventory record if one doesn't exist -->
+                                <span class="text-muted">No inventory record</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>You currently have no products listed or no inventory records for your products.</p>
+        <!-- Optionally, add a link/button to add new products -->
+    {% endif %}
+
+    <a href="{{ url_for('frontend.home') }}" class="btn btn-secondary mt-3">Back to Home</a>
+    <!-- Add link to add new product if applicable -->
+    <!-- e.g., <a href="{{ url_for('supplier.add_product') }}" class="btn btn-success mt-3">Add New Product</a> -->
+
+</div>
+{% endblock %}
+

@@ -1,0 +1,209 @@
+{% extends "base.html" %}
+
+{% block title %}User Profile - SCM Pro{% endblock %}
+
+{% block page_title %}Your Profile{% endblock %}
+
+{% block head_extra %}
+<style>
+  .profile-image-clickable {
+    cursor: pointer;
+  }
+  #profileImageModal .modal-dialog {
+    max-width: 90vw; /* Allow modal to be very wide */
+    max-height: 90vh; /* Allow modal to be very tall */
+    width: auto;
+    margin: auto; /* Center the modal */
+    display: flex; /* Use flexbox for centering content */
+    align-items: center; /* Vertically center */
+    justify-content: center; /* Horizontally center */
+  }
+  #profileImageModal .modal-content {
+    background-color: #fff; /* Light background for the modal content */
+    border: 1px solid rgba(0,0,0,.2); /* Standard Bootstrap border */
+    border-radius: .3rem; /* Standard Bootstrap border-radius */
+    box-shadow: 0 .5rem 1rem rgba(0,0,0,.5); /* Standard Bootstrap shadow */
+    width: auto; /* Adjust width based on image */
+    max-width: 100%;
+    max-height: 100%;
+    overflow: hidden; /* Prevent scrollbars on modal-content itself */
+  }
+  #profileImageModal .modal-header {
+    border-bottom: 1px solid #dee2e6; /* Standard Bootstrap header border */
+    padding: 1rem 1rem;
+    display: flex;
+    justify-content: flex-end; /* Push close button to the right */
+  }
+   #profileImageModal .modal-header .btn-close {
+    /* Default Bootstrap styling for btn-close should be fine on light background */
+    padding: 0.5rem;
+    margin: -0.5rem -0.5rem -0.5rem auto; 
+  }
+  #profileImageModal .modal-body {
+    padding: 5px; /* Minimal padding around the image */
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: auto; /* Allow scrolling if image is extremely large, though max-height on img should prevent */
+  }
+  #profileImageModal .modal-body img {
+    max-width: 100%;
+    max-height: calc(90vh - 70px); /* Adjust based on modal header/footer height if any, minus padding */
+    display: block;
+    margin: auto;
+    object-fit: contain; /* Ensure image fits and maintains aspect ratio */
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h4>Profile Picture</h4>
+                </div>
+                <div class="card-body text-center">
+                    <img src="{{ url_for("static", filename="profile_pics/" + current_user.image_file) }}" 
+                         alt="User Avatar" 
+                         class="img-thumbnail rounded-circle mb-3 profile-image-clickable" 
+                         style="width: 150px; height: 150px; object-fit: cover;"
+                         data-bs-toggle="modal" 
+                         data-bs-target="#profileImageModal"
+                         data-image-url="{{ url_for("static", filename="profile_pics/" + current_user.image_file) }}">
+                    <h5>{{ current_user.username }}</h5>
+                    <p class="text-muted">{{ current_user.email }}</p>
+                    <p class="text-muted">Role: {{ current_user.role.capitalize() if current_user.role else "N/A" }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-8">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h4>Update Account Details</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for("frontend.profile") }}" enctype="multipart/form-data">
+                        {{ profile_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ profile_form.username.label(class="form-label") }}
+                            {% if profile_form.username.errors %}
+                                {{ profile_form.username(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in profile_form.username.errors %}<span>{{ error }}</span>{% endfor %}
+                                </div>
+                            {% else %}
+                                {{ profile_form.username(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            {{ profile_form.email.label(class="form-label") }}
+                            {% if profile_form.email.errors %}
+                                {{ profile_form.email(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in profile_form.email.errors %}<span>{{ error }}</span>{% endfor %}
+                                </div>
+                            {% else %}
+                                {{ profile_form.email(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            {{ profile_form.picture.label(class="form-label") }}<br>
+                            {{ profile_form.picture(class="form-control-file") }}
+                            {% if profile_form.picture.errors %}
+                                {% for error in profile_form.picture.errors %}
+                                    <span class="text-danger">{{ error }}</span><br>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                             {{ profile_form.submit_profile(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h4>Change Password</h4>
+                </div>
+                <div class="card-body">
+                    <form method="POST" action="{{ url_for("frontend.profile") }}">
+                        {{ password_form.hidden_tag() }}
+                        <div class="mb-3">
+                            {{ password_form.current_password.label(class="form-label") }}
+                            {% if password_form.current_password.errors %}
+                                {{ password_form.current_password(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in password_form.current_password.errors %}<span>{{ error }}</span>{% endfor %}
+                                </div>
+                            {% else %}
+                                {{ password_form.current_password(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            {{ password_form.new_password.label(class="form-label") }}
+                            {% if password_form.new_password.errors %}
+                                {{ password_form.new_password(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in password_form.new_password.errors %}<span>{{ error }}</span>{% endfor %}
+                                </div>
+                            {% else %}
+                                {{ password_form.new_password(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="mb-3">
+                            {{ password_form.confirm_new_password.label(class="form-label") }}
+                            {% if password_form.confirm_new_password.errors %}
+                                {{ password_form.confirm_new_password(class="form-control is-invalid") }}
+                                <div class="invalid-feedback">
+                                    {% for error in password_form.confirm_new_password.errors %}<span>{{ error }}</span>{% endfor %}
+                                </div>
+                            {% else %}
+                                {{ password_form.confirm_new_password(class="form-control") }}
+                            {% endif %}
+                        </div>
+                        <div class="form-group">
+                            {{ password_form.submit_password(class="btn btn-primary") }}
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Profile Image Modal -->
+<div class="modal fade" id="profileImageModal" tabindex="-1" aria-labelledby="profileImageModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl"> <!-- Added modal-xl for larger default, custom CSS will refine -->
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title visually-hidden" id="profileImageModalLabel">Profile Picture</h5> <!-- Title hidden but present for accessibility -->
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body text-center">
+        <img src="" id="enlargedProfileImage" alt="Enlarged Profile Picture" class="img-fluid">
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts_extra %}
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+  var profileImageModal = document.getElementById("profileImageModal");
+  if (profileImageModal) {
+    profileImageModal.addEventListener("show.bs.modal", function (event) {
+      var triggerElement = event.relatedTarget; // Element that triggered the modal
+      var imageUrl = triggerElement.getAttribute("data-image-url");
+      var modalImage = profileImageModal.querySelector("#enlargedProfileImage");
+      modalImage.src = imageUrl;
+    });
+  }
+});
+</script>
+{% endblock %}
+
+

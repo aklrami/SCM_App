@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block title %}Home - {{ super() }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1>Welcome to Our Store!</h1>
+    <p>Browse our selection of fine products.</p>
+
+    <hr>
+
+    <h2>Featured Products</h2>
+    {% if products %}
+        <div class="row">
+            {% for product in products %}
+                <div class="col-md-4 mb-3">
+                    <div class="card">
+                        {# Assuming product has an image_url attribute, otherwise display placeholder #}
+                        {# <img src="{{ product.image_url or url_for('static', filename='images/placeholder.png') }}" class="card-img-top" alt="{{ product.name }}"> #}
+                        <div class="card-body">
+                            <h5 class="card-title">{{ product.name }}</h5>
+                            <p class="card-text">{{ product.description[:100] if product.description else 'No description available.' }}...</p>
+                            <p class="card-text"><strong>Price: ${{ "%.2f"|format(product.price) }}</strong></p>
+                            {# Add to cart form #}
+                            <form action="{{ url_for('frontend.add_to_cart', product_id=product.id) }}" method="POST">
+                                <div class="input-group mb-3">
+                                    <input type="number" name="quantity" class="form-control" value="1" min="1">
+                                    <button type="submit" class="btn btn-primary">Add to Cart</button>
+                                </div>
+                            </form>
+                            {# <a href="{{ url_for('frontend.product_detail', product_id=product.id) }}" class="btn btn-secondary">View Details</a> #}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No products featured at the moment. Please check back later!</p>
+    {% endif %}
+
+</div>
+{% endblock %}
+

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block page_title %}
+    {{ legend }}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header">
+                    <h4>{{ legend }}</h4>
+                </div>
+                <div class="card-body">
+                    <p><strong>Product:</strong> {{ product.name }} (SKU: {{ product.sku }})</p>
+                    <p><strong>Current Stock:</strong> {{ inventory_item.quantity_on_hand }}</p>
+                    <hr>
+                    <form method="POST" action="{{ url_for('frontend.adjust_stock', inventory_id=inventory_item.id) }}" novalidate>
+                        {{ form.hidden_tag() }} {# CSRF token #}
+                        
+                        <div class="mb-3">
+                            {{ form.adjustment_type.label(class="form-label") }}
+                            {{ form.adjustment_type(class="form-select") }}
+                            {% if form.adjustment_type.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.adjustment_type.errors %}
+                                        <span>{{ error }}</span><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            {{ form.adjustment.label(class="form-label") }}
+                            {{ form.adjustment(class="form-control", type="number", min="1") }}
+                            {% if form.adjustment.errors %}
+                                <div class="invalid-feedback d-block">
+                                    {% for error in form.adjustment.errors %}
+                                        <span>{{ error }}</span><br>
+                                    {% endfor %}
+                                </div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="form-group mt-4">
+                            {{ form.submit(class="btn btn-primary w-100") }}
+                        </div>
+                        <div class="form-group mt-2 text-center">
+                           <a href="{{ url_for('frontend.view_inventory') }}" class="btn btn-outline-secondary">Cancel</a>                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

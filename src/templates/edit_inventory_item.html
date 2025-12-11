@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>{{ title }}</h2>
+    <p>Editing inventory for: <strong>{{ product.name }}</strong> (SKU: {{ product.sku }})</p>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+
+    <form method="POST" action="{{ url_for('frontend.edit_inventory_item', inventory_id=inventory_item.id) }}">
+        <div class="mb-3">
+            <label for="quantity" class="form-label">Quantity on Hand</label>
+            <input type="number" class="form-control" id="quantity" name="quantity" value="{{ inventory_item.quantity_on_hand }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="reorder_level" class="form-label">Reorder Level</label>
+            <input type="number" class="form-control" id="reorder_level" name="reorder_level" value="{{ inventory_item.reorder_level }}" required>
+        </div>
+        <div class="mb-3">
+            <label for="location" class="form-label">Location (Optional)</label>
+            <input type="text" class="form-control" id="location" name="location" value="{{ inventory_item.location if inventory_item.location }}">
+        </div>
+        
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <a href="{{ url_for('frontend.supplier_inventory') }}" class="btn btn-secondary">Cancel</a>
+    </form>
+
+</div>
+{% endblock %}
+

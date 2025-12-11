@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block title %}{{ title }} - SCM Pro{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card dashboard-card">
+        <div class="card-header">
+            <h1>{{ title }}</h1>
+        </div>
+        <div class="card-body">
+            <p>This is a placeholder page for the {{ title }}.</p>
+            <p>Actual content and functionality will be implemented here.</p>
+            {% if content %}
+                <p>{{ content }}</p>
+            {% endif %}
+            <a href="{{ url_for("frontend.index") }}" class="btn btn-primary mt-3">Back to Home/Dashboard</a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

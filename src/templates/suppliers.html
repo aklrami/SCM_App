@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+
+{% block title %}Suppliers - SCM Pro{% endblock %}
+
+{% block page_title %}Supplier Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-3">
+    <div class="card">
+        <div class="card-header">
+            <h4>Current Suppliers
+                <a href="{{ url_for('frontend.add_supplier') }}" class="btn btn-primary btn-sm float-end">Add New Supplier</a>
+            </h4>
+        </div>
+        <div class="card-body">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+              {% if messages %}
+                {% for category, message in messages %}
+                  <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                    {{ message }}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  </div>
+                {% endfor %}
+              {% endif %}
+            {% endwith %}
+            <table class="table table-striped table-hover">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Name</th>
+                        <th>Contact Person</th>
+                        <th>Email</th>
+                        <th>Phone</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if suppliers %}
+                        {% for supplier in suppliers %}
+                        <tr>
+                            <td>{{ supplier.id }}</td>
+                            <td>{{ supplier.name }}</td>
+                            <td>{{ supplier.contact_person if supplier.contact_person else 'N/A' }}</td>
+                            <td>{{ supplier.email }}</td>
+                            <td>{{ supplier.phone if supplier.phone else 'N/A' }}</td>
+                            <td>
+                                {% if current_user.role == 'admin' or (current_user.role == 'supplier' and current_user.supplier_id == supplier.id) %}
+                                <a href="{{ url_for('frontend.edit_supplier', supplier_id=supplier.id) }}" class="btn btn-sm btn-warning">Edit</a>
+                                <form action="{{ url_for('frontend.delete_supplier', supplier_id=supplier.id) }}" method="POST" style="display:inline;">
+                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                                    <button type="submit" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this supplier?');">Delete</button>
+                                </form>
+                                {% else %}
+                                <span class="text-muted">View Only</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="6" class="text-center">No suppliers found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
