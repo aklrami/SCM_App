@@ -12,27 +12,24 @@ Color Palette:
 - Accent Yellow (Warning): #ffc107
 - Accent Red (Error): #dc3545
 - White: #FFFFFF
-
-Typography:
-- Font Family: 'Roboto', sans-serif (A common, clean, and modern sans-serif font. Will need to be imported or ensure system availability. For now, using a generic sans-serif as fallback.)
-- Base Font Size: 16px
-- Headings: Clear hierarchy, slightly bolder.
 */
 
-/* General Resets & Body Styling */
+/* ============================
+   General Resets & Body Styling
+   ============================ */
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     color: #343a40;
-    background-color: #FFFFFF; /* Or a very light gray like #f4f6f9 for a softer feel */
+    background-color: #FFFFFF;
     margin: 0;
     padding: 0;
     display: flex;
     flex-direction: column;
-    height: 100vh; /* Changed from min-height to height */
-    overflow-y: hidden; /* Added to prevent body scroll, main content will scroll */
-    overflow-x: hidden; /* Prevent horizontal scroll on animations */
+    height: 100vh;
+    overflow-y: hidden; /* main-content will scroll */
+    overflow-x: hidden; /* prevent horizontal scroll */
 }
 
 .container {
@@ -42,7 +39,9 @@ body {
     padding: 20px;
 }
 
-/* Headings */
+/* ===============
+   Typography
+   =============== */
 h1, h2, h3, h4, h5, h6 {
     color: #0052CC;
     margin-top: 1.5rem;
@@ -50,24 +49,39 @@ h1, h2, h3, h4, h5, h6 {
     font-weight: 600;
 }
 
-h1 { font-size: 2.25rem; }
-h2 { font-size: 1.875rem; }
-h3 { font-size: 1.5rem; }
-h4 { font-size: 1.25rem; }
+h1 {
+    font-size: 2.25rem;
+}
 
-/* Links */
+h2 {
+    font-size: 1.875rem;
+}
+
+h3 {
+    font-size: 1.5rem;
+}
+
+h4 {
+    font-size: 1.25rem;
+}
+
+/* ===============
+   Links
+   =============== */
 a {
     color: #007BFF;
     text-decoration: none;
     transition: color 0.2s ease-in-out;
 }
 
-a:hover {
-    color: #0052CC;
-    text-decoration: underline;
-}
+    a:hover {
+        color: #0052CC;
+        text-decoration: underline;
+    }
 
-/* Buttons */
+/* ===============
+   Buttons
+   =============== */
 .btn {
     display: inline-block;
     font-weight: 400;
@@ -80,14 +94,14 @@ a:hover {
     font-size: 1rem;
     line-height: 1.5;
     border-radius: 0.25rem;
-    transition: all 0.2s ease-in-out; /* Unified transition */
+    transition: all 0.2s ease-in-out;
     cursor: pointer;
 }
 
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
 
 .btn-primary {
     color: #fff;
@@ -95,12 +109,11 @@ a:hover {
     border-color: #0052CC;
 }
 
-.btn-primary:hover {
-    background-color: #0041a3;
-    border-color: #003b94;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
+    .btn-primary:hover {
+        background-color: #0041a3;
+        border-color: #003b94;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    }
 
 .btn-secondary {
     color: #fff;
@@ -108,42 +121,41 @@ a:hover {
     border-color: #6c757d;
 }
 
-.btn-secondary:hover {
-    background-color: #5a6268;
-    border-color: #545b62;
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+    .btn-secondary:hover {
+        background-color: #5a6268;
+        border-color: #545b62;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
 
 .btn-success {
     color: #fff;
     background-color: #28a745;
     border-color: #28a745;
 }
-.btn-success:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+
+    .btn-success:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
 
 .btn-danger {
     color: #fff;
     background-color: #dc3545;
     border-color: #dc3545;
 }
-.btn-danger:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+
+    .btn-danger:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
 
 .btn-warning {
     color: #212529;
     background-color: #ffc107;
     border-color: #ffc107;
 }
-.btn-warning:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-}
+
+    .btn-warning:hover {
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
 
 .btn-link {
     font-weight: 400;
@@ -151,13 +163,15 @@ a:hover {
     text-decoration: none;
 }
 
-.btn-link:hover {
-    text-decoration: underline;
-    transform: none; /* No lift for link buttons */
-    box-shadow: none;
-}
+    .btn-link:hover {
+        text-decoration: underline;
+        transform: none;
+        box-shadow: none;
+    }
 
-/* Forms */
+/* ===============
+   Forms
+   =============== */
 .form-control {
     display: block;
     width: 100%;
@@ -170,17 +184,17 @@ a:hover {
     background-clip: padding-box;
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
+    box-sizing: border-box;
     transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
-    box-sizing: border-box; /* Added for better width control */
 }
 
-.form-control:focus {
-    color: #495057;
-    background-color: #fff;
-    border-color: #80bdff;
-    outline: 0;
-    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-}
+    .form-control:focus {
+        color: #495057;
+        background-color: #fff;
+        border-color: #80bdff;
+        outline: 0;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+    }
 
 .form-group {
     margin-bottom: 1rem;
@@ -192,7 +206,9 @@ label {
     font-weight: 500;
 }
 
-/* Cards */
+/* ===============
+   Cards
+   =============== */
 .card {
     position: relative;
     display: flex;
@@ -208,15 +224,15 @@ label {
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
-}
+    .card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+    }
 
 .card-header {
     padding: 0.75rem 1.25rem;
     margin-bottom: 0;
-    background-color: #f8f9fa; /* Lighter header */
+    background-color: #f8f9fa;
     border-bottom: 1px solid rgba(0, 0, 0, 0.125);
     font-size: 1.2rem;
     font-weight: 500;
@@ -234,7 +250,9 @@ label {
     border-top: 1px solid rgba(0,0,0,0.125);
 }
 
-/* Tables */
+/* ===============
+   Tables
+   =============== */
 .table {
     width: 100%;
     margin-bottom: 1rem;
@@ -242,20 +260,20 @@ label {
     border-collapse: collapse;
 }
 
-.table th,
-.table td {
-    padding: 0.75rem;
-    vertical-align: top;
-    border-top: 1px solid #dee2e6;
-}
+    .table th,
+    .table td {
+        padding: 0.75rem;
+        vertical-align: top;
+        border-top: 1px solid #dee2e6;
+    }
 
-.table thead th {
-    vertical-align: bottom;
-    border-bottom: 2px solid #dee2e6;
-    background-color: #f8f9fa;
-    color: #0052CC;
-    font-weight: 600;
-}
+    .table thead th {
+        vertical-align: bottom;
+        border-bottom: 2px solid #dee2e6;
+        background-color: #f8f9fa;
+        color: #0052CC;
+        font-weight: 600;
+    }
 
 .table-striped tbody tr:nth-of-type(odd) {
     background-color: rgba(0, 0, 0, 0.03);
@@ -263,102 +281,145 @@ label {
 
 .table-hover tbody tr:hover {
     color: #212529;
-    background-color: rgba(0, 123, 255, 0.075); /* Light blue hover for table rows */
+    background-color: rgba(0, 123, 255, 0.075);
 }
 
-/* Navigation / Sidebar */
+/* =====================
+   Navigation / Sidebar
+   ===================== */
 .sidebar {
     width: 250px;
-    background-color: #343a40; /* Dark sidebar */
+    background-color: #343a40;
     color: #fff;
     padding: 20px;
-    height: 100vh; /* Full height */
-    position: fixed; /* Fixed Sidebar */
+    height: 100vh;
+    position: fixed;
     top: 0;
     left: 0;
     overflow-y: auto;
     box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    z-index: 1000;
 }
 
-.sidebar h3 a {
-    transition: color 0.2s ease-in-out;
-}
-.sidebar h3 a:hover {
-    color: #00BFFF; /* Lighter blue on hover for brand */
-}
+    .sidebar h3 a {
+        transition: color 0.2s ease-in-out;
+    }
 
-.sidebar ul {
-    list-style: none;
-    padding: 0;
-}
+        .sidebar h3 a:hover {
+            color: #00BFFF;
+        }
 
-.sidebar ul li a {
-    color: #adb5bd;
-    padding: 10px 15px;
-    display: block;
-    text-decoration: none;
-    border-radius: 0.25rem;
-    transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, padding-left 0.2s ease-in-out;
-}
+    .sidebar ul {
+        list-style: none;
+        padding: 0;
+        margin: 1rem 0 0 0;
+    }
 
-.sidebar ul li a:hover,
-.sidebar ul li a.active {
-    background-color: #0052CC; /* Primary blue for active/hover */
-    color: #fff;
-    padding-left: 20px; /* Indent on hover/active */
-}
+        .sidebar ul li a {
+            color: #adb5bd;
+            padding: 10px 15px;
+            display: block;
+            text-decoration: none;
+            border-radius: 0.25rem;
+            transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, padding-left 0.2s ease-in-out;
+        }
 
-.sidebar ul li a i {
-    transition: transform 0.2s ease-in-out;
-}
+            .sidebar ul li a:hover,
+            .sidebar ul li a.active {
+                background-color: #0052CC;
+                color: #fff;
+                padding-left: 20px;
+            }
 
-.sidebar ul li a:hover i,
-.sidebar ul li a.active i {
-    transform: scale(1.1); /* Slightly scale icon on hover/active */
-}
+            .sidebar ul li a i {
+                transition: transform 0.2s ease-in-out;
+            }
 
-/* Main Content Area (to be used with sidebar) */
+            .sidebar ul li a:hover i,
+            .sidebar ul li a.active i {
+                transform: scale(1.1);
+            }
+
+/* =====================
+   Main Content Area
+   ===================== */
 .main-content {
-    margin-left: 250px; /* Same as sidebar width */
+    margin-left: 250px; /* same as sidebar width */
     padding: 20px;
     flex-grow: 1;
     animation: fadeIn 0.5s ease-in-out;
-    overflow-y: auto; /* Allow vertical scroll only for main content */
+    overflow-y: auto; /* scroll inside content */
     max-height: 100vh;
 }
 
-/* Header (if used above main content, not part of sidebar) */
+/* =====================
+   Header (optional)
+   ===================== */
 .header {
     background-color: #fff;
     padding: 1rem;
     border-bottom: 1px solid #dee2e6;
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
-    /* position: sticky; top: 0; z-index: 1020; */ /* If sticky header is needed */
 }
 
-/* Footer */
+/* =====================
+   Footer
+   ===================== */
 .footer {
     background-color: #f8f9fa;
     color: #6c757d;
     padding: 1rem;
     text-align: center;
     border-top: 1px solid #dee2e6;
-    margin-top: auto; /* Pushes footer to bottom if content is short */
+    margin-top: auto;
 }
 
-/* Utility Classes */
-.text-center { text-align: center; }
-.mt-1 { margin-top: 0.25rem !important; }
-.mt-2 { margin-top: 0.5rem !important; }
-.mt-3 { margin-top: 1rem !important; }
-.mb-1 { margin-bottom: 0.25rem !important; }
-.mb-2 { margin-bottom: 0.5rem !important; }
-.mb-3 { margin-bottom: 1rem !important; }
-.p-1 { padding: 0.25rem !important; }
-.p-2 { padding: 0.5rem !important; }
-.p-3 { padding: 1rem !important; }
+/* =====================
+   Utility Classes
+   ===================== */
+.text-center {
+    text-align: center;
+}
 
-/* Alerts */
+.mt-1 {
+    margin-top: 0.25rem !important;
+}
+
+.mt-2 {
+    margin-top: 0.5rem !important;
+}
+
+.mt-3 {
+    margin-top: 1rem !important;
+}
+
+.mb-1 {
+    margin-bottom: 0.25rem !important;
+}
+
+.mb-2 {
+    margin-bottom: 0.5rem !important;
+}
+
+.mb-3 {
+    margin-bottom: 1rem !important;
+}
+
+.p-1 {
+    padding: 0.25rem !important;
+}
+
+.p-2 {
+    padding: 0.5rem !important;
+}
+
+.p-3 {
+    padding: 1rem !important;
+}
+
+/* =====================
+   Alerts
+   ===================== */
 .alert {
     position: relative;
     padding: 0.75rem 1.25rem;
@@ -392,10 +453,17 @@ label {
     border-color: #bee5eb;
 }
 
-/* Keyframe Animations */
+/* =====================
+   Animations
+   ===================== */
 @keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
 }
 
 @keyframes slideInDown {
@@ -403,19 +471,22 @@ label {
         transform: translateY(-20px);
         opacity: 0;
     }
+
     to {
         transform: translateY(0);
         opacity: 1;
     }
 }
 
-/* Specific enhancements for dashboard cards */
+/* =====================
+   Dashboard Cards
+   ===================== */
 .dashboard-card .card-body {
     transition: background-color 0.3s ease;
 }
 
 .dashboard-card:hover .card-body {
-    background-color: rgba(0,0,0,0.03); /* Subtle background change on card hover */
+    background-color: rgba(0,0,0,0.03);
 }
 
 .dashboard-card .card-title {
@@ -423,7 +494,7 @@ label {
 }
 
 .dashboard-card:hover .card-title {
-    color: #0052CC; /* Emphasize title on hover */
+    color: #0052CC;
 }
 
 .dashboard-card .card-text a {
@@ -431,96 +502,110 @@ label {
     transition: transform 0.2s ease-in-out;
 }
 
-.dashboard-card .card-text a:hover {
-    transform: translateX(5px);
-}
-/* Add class .dashboard-card to the cards in dashboard_placeholder.html */
-/* --- Responsive layout tweaks --- */
-
-/* Medium screens: slightly adjust layout */
-@media (max-width: 992px) {
-    .sidebar {
-        width: 220px;
+    .dashboard-card .card-text a:hover {
+        transform: translateX(5px);
     }
 
-    .main-content {
-        margin-left: 220px;
-    }
+/* ============================
+   Mobile hamburger layout
+   ============================ */
+
+/* default: hide mobile header & overlay on desktop */
+.mobile-header {
+    display: none;
 }
 
-/* Small screens (phones): sidebar becomes top bar, content full-width */
+.sidebar-overlay {
+    display: none;
+}
+
 @media (max-width: 768px) {
+
+    /* Let the page scroll naturally on phones */
     body {
-        height: auto; /* allow page to be taller than the screen */
-        overflow-y: auto; /* allow scrolling */
-        overflow-x: hidden;
-        display: block; /* remove flex body on very small screens */
-    }
-
-    .sidebar {
-        position: static; /* no fixed sidebar */
-        width: 100%;
+        display: block;
         height: auto;
-        box-shadow: none;
-        padding: 0.75rem 1rem;
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-top: 56px; /* space for mobile header */
+    }
+
+    /* Mobile top bar */
+    .mobile-header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 56px;
+        background-color: #343a40;
+        color: #fff;
         display: flex;
-        flex-direction: column;
-        align-items: flex-start;
+        align-items: center;
+        padding: 0 1rem;
+        z-index: 1050;
     }
 
-        .sidebar h3 {
-            margin-bottom: 0.5rem;
-        }
-
-        .sidebar ul {
-            list-style: none;
-            padding-left: 0;
-            margin: 0.5rem 0 0 0;
-            width: 100%;
-            display: flex;
-            flex-wrap: wrap; /* menu can wrap to multiple lines */
-            gap: 0.25rem;
-        }
-
-            .sidebar ul li {
-                flex: 1 1 50%; /* two columns of items on phones */
-            }
-
-                .sidebar ul li a {
-                    display: block;
-                    width: 100%;
-                    padding: 0.4rem 0.5rem;
-                    font-size: 0.85rem;
-                    text-align: left;
-                }
-
-    .main-content {
-        margin-left: 0; /* no sidebar offset */
-        padding: 0.75rem;
-        max-height: none; /* remove the calc(...) limit for mobile */
-        overflow-y: visible;
+    .mobile-menu-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.5rem;
+        margin-right: 0.75rem;
     }
 
-    .footer {
-        padding: 0.5rem;
-        font-size: 0.8rem;
-        text-align: center;
+    .mobile-brand {
+        font-weight: 600;
+        font-size: 1rem;
     }
-}
 
-@media (max-width: 768px) {
+    /* Sidebar becomes off-canvas drawer */
     .sidebar {
-        position: relative !important;
-        width: 100% !important;
-        height: auto !important;
-        margin: 0;
-        padding: 1rem !important;
+        top: 56px;
+        height: calc(100vh - 56px);
+        transform: translateX(-100%);
+        transition: transform 0.25s ease-in-out;
+        width: 260px;
+        z-index: 1040;
     }
 
+    /* Overlay behind sidebar */
+    .sidebar-overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.4);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s ease-in-out;
+        z-index: 1030;
+        display: block;
+    }
+
+    /* When body has .sidebar-open, show menu + overlay */
+    .sidebar-open .sidebar {
+        transform: translateX(0);
+    }
+
+    .sidebar-open .sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    /* Main content full width on mobile */
     .main-content {
-        margin-left: 0 !important;
-        padding: 1rem !important;
-            
+        margin-left: 0;
+        padding: 0.75rem;
+        height: auto;
+        max-height: none;
+        overflow: visible;
     }
-}
 
+    /* Slightly smaller tables for mobile */
+    table {
+        font-size: 0.8rem;
+    }
+
+        table th,
+        table td {
+            padding: 0.4rem;
+        }
+}
