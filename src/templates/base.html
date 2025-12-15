@@ -21,8 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Custom Modern CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom_modern.css') }}?v=5">
-
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom_modern.css') }}?v=6">
 
   {% block head_extra %}{% endblock %}
 </head>
@@ -34,9 +33,6 @@
      style="z-index: 3000;">
     Skip to content
   </a>
-
-  {# Overlay used when sidebar is open on mobile #}
-  <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
   <div class="layout-wrapper erp-shell">
 
@@ -189,17 +185,21 @@
       </ul>
     </nav>
 
+    <!-- ✅ IMPORTANT: overlay MUST be INSIDE layout-wrapper and AFTER sidebar -->
+    <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
+
     <!-- Main -->
     <div class="main-content erp-main">
 
       <!-- Topbar (sticky) -->
       <header class="erp-topbar" role="banner">
         <div class="topbar-left">
-          <!-- mobile only -->
           <button id="mobile-menu-toggle"
                   class="btn btn-sm btn-light erp-icon-btn d-inline-flex d-md-none"
                   type="button"
-                  aria-label="Toggle navigation">
+                  aria-label="Toggle navigation"
+                  aria-controls="erpSidebar"
+                  aria-expanded="false">
             <i class="bi bi-list" aria-hidden="true"></i>
           </button>
 
@@ -214,7 +214,6 @@
         </div>
 
         <div class="topbar-center">
-          {# Smart default search target #}
           {% set _search_action =
               url_for('frontend.shop_products')
               if request.endpoint in ['frontend.shop_products','frontend.view_cart']
@@ -234,7 +233,6 @@
         <div class="topbar-right">
           {% if current_user.is_authenticated %}
 
-            <!-- Notifications (safe defaults if not provided) -->
             {% set notif_count = notif_count|default(0) %}
             {% set notifications = notifications|default([]) %}
 
@@ -270,7 +268,6 @@
               </div>
             </div>
 
-            <!-- User menu -->
             <div class="dropdown">
               <button class="btn btn-sm btn-light erp-user-btn"
                       type="button"
@@ -299,10 +296,8 @@
         </div>
       </header>
 
-      <!-- Page container -->
       <main id="erpMainContent" class="container-fluid erp-page" role="main">
 
-        <!-- Flash → Toasts -->
         <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 2000;">
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
@@ -353,7 +348,7 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <!-- Custom JS -->
-  <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=6"></script>
 
   {% block scripts_extra %}{% endblock %}
 </body>
