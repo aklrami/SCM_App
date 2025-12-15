@@ -1,253 +1,505 @@
 {% extends "base.html" %}
+{% block title %}Dashboard • SCM Pro{% endblock %}
 
-{% block title %}Dashboard - SCM Pro{% endblock %}
+{% macro status_badge(status) %}
+  {% set s = (status or "")|lower %}
+  {% if s == "pending" %}
+    <span class="badge rounded-pill text-bg-warning">Pending</span>
+  {% elif s == "processing" %}
+    <span class="badge rounded-pill text-bg-primary">Processing</span>
+  {% elif s == "shipped" %}
+    <span class="badge rounded-pill text-bg-info">Shipped</span>
+  {% elif s == "delivered" %}
+    <span class="badge rounded-pill text-bg-success">Delivered</span>
+  {% elif s == "cancelled" %}
+    <span class="badge rounded-pill text-bg-danger">Cancelled</span>
+  {% else %}
+    <span class="badge rounded-pill text-bg-secondary">{{ status }}</span>
+  {% endif %}
+{% endmacro %}
 
-{% block page_title %}Dashboard{% endblock %}
+{% macro stock_badge(qoh, reorder) %}
+  {% set q = (qoh or 0) %}
+  {% set r = (reorder or 0) %}
+  {% if q <= 0 %}
+    <span class="badge rounded-pill text-bg-danger">Critical</span>
+  {% elif q <= r %}
+    <span class="badge rounded-pill text-bg-warning">Low</span>
+  {% else %}
+    <span class="badge rounded-pill text-bg-success">OK</span>
+  {% endif %}
+{% endmacro %}
 
 {% block content %}
-<div class="container-fluid">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card shadow-sm">
-                <div class="card-body">
-                    <h4 class="card-title">Welcome back, {{ current_user.username }}!</h4>
-                    <p class="card-text">Your role: <span class="badge bg-primary">{{ current_user.role|capitalize }}</span></p>
-                    {% if current_user.role == "admin" %}
-                        <p>As an administrator, you have full access to manage users, suppliers, products, inventory, and orders.</p>
-                    {% elif current_user.role == "supplier" %}
-                        <p>As a supplier, you can manage your supplier profile, your products, and view related inventory and orders.</p>
-                    {% elif current_user.role == "user" %}
-                        <p>As a user, you can browse products, manage your orders, and view inventory information.</p>
+<div class="erp-pagewrap">
+
+  <!-- Page Header -->
+  <div class="erp-pagehead">
+    <div>
+      <div class="erp-breadcrumbs">
+        <span class="text-muted">Home</span> <span class="mx-2 text-muted">/</span> <span>Dashboard</span>
+      </div>
+      <h1 class="erp-title mb-0">Dashboard</h1>
+      <div class="erp-subtitle">
+        Welcome back, <span class="fw-semibold">{{ current_user.username }}</span>.
+        <span class="erp-chip ms-2">{{ current_user.role|capitalize }}</span>
+      </div>
+    </div>
+
+    <div class="erp-actions">
+      {% if current_user.is_authenticated and current_user.role in ['admin', 'supplier'] %}
+      <div class="dropdown">
+        <button class="btn btn-primary btn-sm" data-bs-toggle="dropdown">
+          <i class="bi bi-plus-circle me-1"></i>Create <i class="bi bi-chevron-down ms-1"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end erp-dropdown">
+          {% if current_user.role == 'admin' %}
+            <li><a class="dropdown-item" href="{{ url_for('frontend.view_products') }}"><i class="bi bi-boxes me-2"></i>Add Product</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('frontend.view_suppliers') }}"><i class="bi bi-truck me-2"></i>Add Supplier</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('frontend.view_orders') }}"><i class="bi bi-card-list me-2"></i>New Order</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('frontend.view_inventory') }}"><i class="bi bi-clipboard-data me-2"></i>Adjust Stock</a></li>
+          {% else %}
+            <li><a class="dropdown-item" href="{{ url_for('frontend.view_products') }}"><i class="bi bi-boxes me-2"></i>Manage Products</a></li>
+            <li><a class="dropdown-item" href="{{ url_for('frontend.view_inventory') }}"><i class="bi bi-clipboard-data me-2"></i>View Inventory</a></li>
+          {% endif %}
+        </ul>
+      </div>
+      {% endif %}
+
+      {% if current_user.role == 'user' %}
+        <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.shop_products') }}">
+          <i class="bi bi-shop me-1"></i>Shop
+        </a>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- KPI Grid -->
+  <div class="row g-3 mt-2">
+    {% if current_user.role == "admin" %}
+      <div class="col-12 col-md-4">
+        <div class="erp-card kpi">
+          <div class="kpi-row">
+            <div>
+              <div class="kpi-label">Total Users</div>
+              <div class="kpi-value">{{ stats.total_users if stats else "—" }}</div>
+              <div class="kpi-meta"><i class="bi bi-arrow-up-right"></i> monitored</div>
+            </div>
+            <div class="kpi-icon"><i class="bi bi-people"></i></div>
+          </div>
+          <a class="kpi-link" href="{{ url_for('frontend.manage_users') }}">View details <i class="bi bi-chevron-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="erp-card kpi">
+          <div class="kpi-row">
+            <div>
+              <div class="kpi-label">Total Products</div>
+              <div class="kpi-value">{{ stats.total_products if stats else "—" }}</div>
+              <div class="kpi-meta"><i class="bi bi-graph-up"></i> active catalog</div>
+            </div>
+            <div class="kpi-icon"><i class="bi bi-boxes"></i></div>
+          </div>
+          <a class="kpi-link" href="{{ url_for('frontend.view_products') }}">View details <i class="bi bi-chevron-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-4">
+        <div class="erp-card kpi warning">
+          <div class="kpi-row">
+            <div>
+              <div class="kpi-label">Pending Orders</div>
+              <div class="kpi-value">{{ stats.pending_orders if stats else "—" }}</div>
+              <div class="kpi-meta"><i class="bi bi-hourglass-split"></i> needs attention</div>
+            </div>
+            <div class="kpi-icon"><i class="bi bi-receipt-cutoff"></i></div>
+          </div>
+          <a class="kpi-link" href="{{ url_for('frontend.view_orders', status='Pending') }}">Review queue <i class="bi bi-chevron-right"></i></a>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if current_user.role == "supplier" %}
+      <div class="col-12 col-md-6">
+        <div class="erp-card kpi">
+          <div class="kpi-row">
+            <div>
+              <div class="kpi-label">Your Products</div>
+              <div class="kpi-value">{{ stats.supplier_products if stats else "—" }}</div>
+              <div class="kpi-meta"><i class="bi bi-box-seam"></i> supplied SKUs</div>
+            </div>
+            <div class="kpi-icon"><i class="bi bi-boxes"></i></div>
+          </div>
+          <a class="kpi-link" href="{{ url_for('frontend.view_products') }}">Manage products <i class="bi bi-chevron-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <div class="erp-card kpi">
+          <div class="kpi-row">
+            <div>
+              <div class="kpi-label">Orders with Your Products</div>
+              <div class="kpi-value">{{ stats.supplier_orders if stats else "—" }}</div>
+              <div class="kpi-meta"><i class="bi bi-truck"></i> fulfillment workload</div>
+            </div>
+            <div class="kpi-icon"><i class="bi bi-card-list"></i></div>
+          </div>
+          <a class="kpi-link" href="{{ url_for('frontend.view_orders') }}">View orders <i class="bi bi-chevron-right"></i></a>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if current_user.role == "user" %}
+      <div class="col-12 col-md-6">
+        <div class="erp-card kpi">
+          <div class="kpi-row">
+            <div>
+              <div class="kpi-label">Your Orders</div>
+              <div class="kpi-value">{{ stats.user_orders if stats else "—" }}</div>
+              <div class="kpi-meta"><i class="bi bi-check2-circle"></i> order history</div>
+            </div>
+            <div class="kpi-icon"><i class="bi bi-cart-check"></i></div>
+          </div>
+          <a class="kpi-link" href="{{ url_for('frontend.view_orders') }}">View orders <i class="bi bi-chevron-right"></i></a>
+        </div>
+      </div>
+
+      <div class="col-12 col-md-6">
+        <div class="erp-card kpi">
+          <div class="kpi-row">
+            <div>
+              <div class="kpi-label">Browse Products</div>
+              <div class="kpi-value">Shop now</div>
+              <div class="kpi-meta"><i class="bi bi-bag"></i> curated inventory</div>
+            </div>
+            <div class="kpi-icon"><i class="bi bi-shop"></i></div>
+          </div>
+          <a class="kpi-link" href="{{ url_for('frontend.shop_products') }}">Open shop <i class="bi bi-chevron-right"></i></a>
+        </div>
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Executive widgets row -->
+  <div class="row g-3 mt-1">
+
+    <!-- Quick actions -->
+    <div class="col-12 col-xl-4">
+      <div class="erp-card">
+        <div class="erp-cardhead">
+          <div class="erp-cardtitle"><i class="bi bi-lightning-charge me-2"></i>Quick actions</div>
+        </div>
+        <div class="erp-cardbody">
+          <div class="d-grid gap-2">
+            {% if current_user.role == 'admin' %}
+              <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.view_inventory') }}"><i class="bi bi-clipboard-data me-2"></i>Adjust inventory</a>
+              <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.view_orders', status='Pending') }}"><i class="bi bi-card-list me-2"></i>Review pending orders</a>
+              <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.view_products') }}"><i class="bi bi-boxes me-2"></i>Manage catalog</a>
+            {% elif current_user.role == 'supplier' %}
+              <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.view_products') }}"><i class="bi bi-boxes me-2"></i>Manage products</a>
+              <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.view_inventory') }}"><i class="bi bi-clipboard-data me-2"></i>Check inventory</a>
+              <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.view_orders') }}"><i class="bi bi-card-list me-2"></i>View orders</a>
+            {% else %}
+              <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.shop_products') }}"><i class="bi bi-shop me-2"></i>Shop products</a>
+              <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.view_orders') }}"><i class="bi bi-receipt me-2"></i>Track orders</a>
+              <a class="btn btn-outline-primary btn-sm" href="{{ url_for('frontend.view_cart') }}"><i class="bi bi-cart me-2"></i>Open cart</a>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Low stock -->
+    {% if current_user.role in ['admin','supplier'] %}
+    <div class="col-12 col-xl-8">
+      <div class="erp-card">
+        <div class="erp-cardhead d-flex align-items-center justify-content-between">
+          <div>
+            <div class="erp-cardtitle"><i class="bi bi-exclamation-triangle me-2"></i>Low stock alerts</div>
+            <div class="text-muted small">Products at or below reorder level</div>
+          </div>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('frontend.view_inventory') }}">
+            Inventory <i class="bi bi-chevron-right ms-1"></i>
+          </a>
+        </div>
+
+        <div class="erp-cardbody">
+          {% if low_stock and low_stock|length > 0 %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Product</th>
+                    <th class="text-nowrap">Health</th>
+                    <th class="text-nowrap">QOH</th>
+                    <th class="text-nowrap">Reorder</th>
+                    <th class="text-nowrap">Location</th>
+                    {% if current_user.role == 'admin' %}
+                      <th class="text-nowrap">Supplier</th>
                     {% endif %}
-                </div>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for item in low_stock %}
+                  <tr>
+                    <td>
+                      <div class="fw-semibold">{{ item.product_name }}</div>
+                      <div class="text-muted small">SKU: {{ item.sku }}</div>
+                    </td>
+                    <td>{{ stock_badge(item.qoh, item.reorder) }}</td>
+                    <td class="fw-semibold text-danger">{{ item.qoh }}</td>
+                    <td>{{ item.reorder }}</td>
+                    <td class="text-muted">{{ item.location or "—" }}</td>
+                    {% if current_user.role == 'admin' %}
+                      <td class="text-muted">{{ item.supplier_name or "—" }}</td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
+          {% else %}
+            <div class="text-muted">No low-stock items right now. ✅</div>
+          {% endif %}
         </div>
+      </div>
     </div>
-
-    <div class="row">
-        {# Admin Dashboard Widgets #}
-        {% if current_user.role == "admin" %}
-            <div class="col-md-4 mb-3">
-                <div class="card text-white bg-primary h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="me-3">
-                                <div class="text-white-75 small">Total Users</div>
-                                <div class="text-lg fw-bold">{{ stats.total_users if stats else "N/A" }}</div>
-                            </div>
-                            <i class="bi bi-people-fill" style="font-size: 2rem;"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer d-flex align-items-center justify-content-between">
-                        <a class="small text-white stretched-link" href="{{ url_for("frontend.manage_users") }}">View Details</a>
-                        <div class="small text-white"><i class="bi bi-chevron-right"></i></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card text-white bg-success h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="me-3">
-                                <div class="text-white-75 small">Total Products</div>
-                                <div class="text-lg fw-bold">{{ stats.total_products if stats else "N/A" }}</div>
-                            </div>
-                            <i class="bi bi-box-seam" style="font-size: 2rem;"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer d-flex align-items-center justify-content-between">
-                        <a class="small text-white stretched-link" href="{{ url_for("frontend.view_products") }}">View Details</a>
-                        <div class="small text-white"><i class="bi bi-chevron-right"></i></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4 mb-3">
-                <div class="card text-white bg-warning h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="me-3">
-                                <div class="text-white-75 small">Pending Orders</div>
-                                <div class="text-lg fw-bold">{{ stats.pending_orders if stats else "N/A" }}</div>
-                            </div>
-                            <i class="bi bi-hourglass-split" style="font-size: 2rem;"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer d-flex align-items-center justify-content-between">
-                        <a class="small text-white stretched-link" href="{{ url_for("frontend.view_orders", status="Pending") }}">View Details</a>
-                        <div class="small text-white"><i class="bi bi-chevron-right"></i></div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-
-        {# Supplier Dashboard Widgets #}
-        {% if current_user.role == "supplier" %}
-            <div class="col-md-6 mb-3">
-                <div class="card text-white bg-info h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="me-3">
-                                <div class="text-white-75 small">Your Products</div>
-                                <div class="text-lg fw-bold">{{ stats.supplier_products if stats else "N/A" }}</div>
-                            </div>
-                            <i class="bi bi-boxes" style="font-size: 2rem;"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer d-flex align-items-center justify-content-between">
-                        <a class="small text-white stretched-link" href="{{ url_for("frontend.view_products") }}">Manage Products</a>
-                        <div class="small text-white"><i class="bi bi-chevron-right"></i></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="card text-dark bg-light h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="me-3">
-                                <div class="text-muted small">Orders with Your Products</div>
-                                <div class="text-lg fw-bold">{{ stats.supplier_orders if stats else "N/A" }}</div>
-                            </div>
-                            <i class="bi bi-receipt" style="font-size: 2rem; color: #6c757d;"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer d-flex align-items-center justify-content-between">
-                        <a class="small text-dark stretched-link" href="{{ url_for("frontend.view_orders") }}">View Orders</a>
-                        <div class="small text-dark"><i class="bi bi-chevron-right"></i></div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-
-        {# User Dashboard Widgets #}
-        {% if current_user.role == "user" %}
-            <div class="col-md-6 mb-3">
-                <div class="card text-white bg-secondary h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="me-3">
-                                <div class="text-white-75 small">Your Orders</div>
-                                <div class="text-lg fw-bold">{{ stats.user_orders if stats else "N/A" }}</div>
-                            </div>
-                            <i class="bi bi-cart-check-fill" style="font-size: 2rem;"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer d-flex align-items-center justify-content-between">
-                        <a class="small text-white stretched-link" href="{{ url_for("frontend.view_orders") }}">View Your Orders</a>
-                        <div class="small text-white"><i class="bi bi-chevron-right"></i></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="card text-dark bg-light h-100">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <div class="me-3">
-                                <div class="text-muted small">Browse Products</div>
-                                <div class="text-lg fw-bold">Shop Now!</div>
-                            </div>
-                            <i class="bi bi-shop" style="font-size: 2rem; color: #6c757d;"></i>
-                        </div>
-                    </div>
-                    <div class="card-footer d-flex align-items-center justify-content-between">
-                        <a class="small text-dark stretched-link" href="{{ url_for("frontend.shop_products") }}">Go to Shop</a>
-                        <div class="small text-dark"><i class="bi bi-chevron-right"></i></div>
-                    </div>
-                </div>
-            </div>
-        {% endif %}
-    </div>
-
-    {# Example Chart - Admin Only #}
-    {% if current_user.role == "admin" and chart_data %}
-    <div class="row mt-4">
-        <div class="col-lg-8">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <i class="bi bi-bar-chart-line-fill me-1"></i>
-                    Order Trends (Last 7 Days)
-                </div>
-                <div class="card-body">
-                    <canvas id="orderTrendChart"></canvas>
-                </div>
-            </div>
+    {% else %}
+    <!-- If user role, show latest orders here -->
+    <div class="col-12 col-xl-8">
+      <div class="erp-card">
+        <div class="erp-cardhead d-flex align-items-center justify-content-between">
+          <div>
+            <div class="erp-cardtitle"><i class="bi bi-clock-history me-2"></i>Latest orders</div>
+            <div class="text-muted small">Track your most recent activity</div>
+          </div>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('frontend.view_orders') }}">
+            Orders <i class="bi bi-chevron-right ms-1"></i>
+          </a>
         </div>
-        <div class="col-lg-4">
-            <div class="card shadow-sm">
-                <div class="card-header">
-                    <i class="bi bi-pie-chart-fill me-1"></i>
-                    Product Categories Distribution
-                </div>
-                <div class="card-body">
-                    <canvas id="categoryPieChart"></canvas>
-                </div>
+        <div class="erp-cardbody">
+          {% if latest_orders and latest_orders|length > 0 %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-nowrap">Order</th>
+                    <th>Status</th>
+                    <th class="text-nowrap">Date</th>
+                    <th class="text-nowrap text-end">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for o in latest_orders %}
+                  <tr>
+                    <td class="fw-semibold">
+                      <a href="{{ url_for('frontend.view_order_detail', order_id=o.id) }}">#{{ o.id }}</a>
+                    </td>
+                    <td>{{ status_badge(o.status) }}</td>
+                    <td class="text-muted text-nowrap">
+                      {{ o.order_date.strftime("%Y-%m-%d %H:%M") if o.order_date else "—" }}
+                    </td>
+                    <td class="text-end fw-semibold">
+                      {{ "%.2f"|format(o.total_amount or 0) }}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
             </div>
+          {% else %}
+            <div class="text-muted">No orders to show yet.</div>
+          {% endif %}
         </div>
+      </div>
     </div>
     {% endif %}
+  </div>
+
+  <!-- Latest orders (Admin + Supplier) + Top suppliers (Admin) -->
+  <div class="row g-3 mt-1">
+    {% if current_user.role in ['admin','supplier'] %}
+    <div class="col-12 col-xl-7">
+      <div class="erp-card">
+        <div class="erp-cardhead d-flex align-items-center justify-content-between">
+          <div>
+            <div class="erp-cardtitle"><i class="bi bi-clock-history me-2"></i>Latest orders</div>
+            <div class="text-muted small">
+              {% if current_user.role == 'admin' %}
+                Recent system orders
+              {% else %}
+                Orders containing your products
+              {% endif %}
+            </div>
+          </div>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('frontend.view_orders') }}">
+            Orders <i class="bi bi-chevron-right ms-1"></i>
+          </a>
+        </div>
+
+        <div class="erp-cardbody">
+          {% if latest_orders and latest_orders|length > 0 %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th class="text-nowrap">Order</th>
+                    <th>Status</th>
+                    <th class="text-nowrap">Date</th>
+                    <th class="text-nowrap text-end">Total</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for o in latest_orders %}
+                  <tr>
+                    <td class="fw-semibold">
+                      <a href="{{ url_for('frontend.view_order_detail', order_id=o.id) }}">#{{ o.id }}</a>
+                      {% if current_user.role == 'admin' %}
+                        <div class="text-muted small">{{ o.customer_name or "Customer" }}</div>
+                      {% endif %}
+                    </td>
+                    <td>{{ status_badge(o.status) }}</td>
+                    <td class="text-muted text-nowrap">
+                      {{ o.order_date.strftime("%Y-%m-%d %H:%M") if o.order_date else "—" }}
+                    </td>
+                    <td class="text-end fw-semibold">
+                      {{ "%.2f"|format(o.total_amount or 0) }}
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="text-muted">No orders to show yet.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+
+    {% if current_user.role == 'admin' %}
+    <div class="col-12 col-xl-5">
+      <div class="erp-card">
+        <div class="erp-cardhead d-flex align-items-center justify-content-between">
+          <div>
+            <div class="erp-cardtitle"><i class="bi bi-trophy me-2"></i>Top suppliers</div>
+            <div class="text-muted small">Ranked by units sold</div>
+          </div>
+          <a class="btn btn-sm btn-outline-primary" href="{{ url_for('frontend.view_suppliers') }}">
+            Suppliers <i class="bi bi-chevron-right ms-1"></i>
+          </a>
+        </div>
+
+        <div class="erp-cardbody">
+          {% if top_suppliers and top_suppliers|length > 0 %}
+            <div class="table-responsive">
+              <table class="table table-hover align-middle mb-0">
+                <thead>
+                  <tr>
+                    <th>Supplier</th>
+                    <th class="text-nowrap">Orders</th>
+                    <th class="text-nowrap">Units</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for s in top_suppliers %}
+                  <tr>
+                    <td class="fw-semibold">{{ s.supplier_name }}</td>
+                    <td class="text-muted">{{ s.orders_count }}</td>
+                    <td class="fw-semibold">{{ s.units_sold }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          {% else %}
+            <div class="text-muted">Not enough data yet to rank suppliers.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Charts (Admin only) -->
+  {% if current_user.role == "admin" and chart_data %}
+    <div class="row g-3 mt-1">
+      <div class="col-12 col-xl-8">
+        <div class="erp-card">
+          <div class="erp-cardhead">
+            <div class="erp-cardtitle"><i class="bi bi-graph-up-arrow me-2"></i>Order trends</div>
+            <div class="text-muted small">Last 7 days</div>
+          </div>
+          <div class="erp-cardbody">
+            <div class="erp-chartbox">
+              <canvas id="orderTrendChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-xl-4">
+        <div class="erp-card">
+          <div class="erp-cardhead">
+            <div class="erp-cardtitle"><i class="bi bi-pie-chart me-2"></i>Category distribution</div>
+            <div class="text-muted small">Catalog structure</div>
+          </div>
+          <div class="erp-cardbody">
+            <div class="erp-chartbox">
+              <canvas id="categoryPieChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
 
 </div>
 {% endblock %}
 
 {% block scripts_extra %}
+{{ super() }}
 {% if current_user.role == "admin" and chart_data %}
 <script>
-    // Order Trend Chart
-    const orderTrendCtx = document.getElementById("orderTrendChart");
-    if (orderTrendCtx) {
-        new Chart(orderTrendCtx, {
-            type: "line",
-            data: {
-                labels: {{ chart_data.order_trend.labels | tojson }},
-                datasets: [{
-                    label: "Orders",
-                    data: {{ chart_data.order_trend.data | tojson }},
-                    borderColor: "rgba(75, 192, 192, 1)",
-                    backgroundColor: "rgba(75, 192, 192, 0.2)",
-                    tension: 0.3,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        ticks: { stepSize: 1 }
-                    }
-                }
-            }
-        });
-    }
+  const orderTrendCtx = document.getElementById("orderTrendChart");
+  if (orderTrendCtx) {
+    new Chart(orderTrendCtx, {
+      type: "line",
+      data: {
+        labels: {{ chart_data.order_trend.labels | tojson }},
+        datasets: [{
+          label: "Orders",
+          data: {{ chart_data.order_trend.data | tojson }},
+          tension: 0.35,
+          fill: true
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: { y: { beginAtZero: true, ticks: { precision: 0 } } },
+        plugins: { legend: { display: false } }
+      }
+    });
+  }
 
-    // Category Pie Chart
-    const categoryPieCtx = document.getElementById("categoryPieChart");
-    if (categoryPieCtx) {
-        new Chart(categoryPieCtx, {
-            type: "pie",
-            data: {
-                labels: {{ chart_data.category_distribution.labels | tojson }},
-                datasets: [{
-                    label: "Products",
-                    data: {{ chart_data.category_distribution.data | tojson }},
-                    backgroundColor: [
-                        "rgba(255, 99, 132, 0.7)",
-                        "rgba(54, 162, 235, 0.7)",
-                        "rgba(255, 206, 86, 0.7)",
-                        "rgba(75, 192, 192, 0.7)",
-                        "rgba(153, 102, 255, 0.7)",
-                        "rgba(255, 159, 64, 0.7)"
-                    ],
-                    hoverOffset: 4
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
-            }
-        });
-    }
+  const categoryPieCtx = document.getElementById("categoryPieChart");
+  if (categoryPieCtx) {
+    new Chart(categoryPieCtx, {
+      type: "doughnut",
+      data: {
+        labels: {{ chart_data.category_distribution.labels | tojson }},
+        datasets: [{ data: {{ chart_data.category_distribution.data | tojson }} }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" } }
+      }
+    });
+  }
 </script>
 {% endif %}
 {% endblock %}
-

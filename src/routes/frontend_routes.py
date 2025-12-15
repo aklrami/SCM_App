@@ -147,38 +147,176 @@ def view_dashboard():
         flash("Your account is not active. Please contact an administrator.", "warning")
         logout_user()
         return redirect(url_for("frontend.login"))
+
     stats = {}
+    low_stock = []
+    latest_orders = []
+    top_suppliers = []
+    chart_data = None
+
+    # -----------------------------
+    # KPI STATS
+    # -----------------------------
     if current_user.is_admin:
         stats["total_users"] = User.query.count()
         stats["total_products"] = Product.query.count()
         stats["pending_orders"] = Order.query.filter_by(status="Pending").count()
+
     elif current_user.is_supplier:
         supplier_profile = Supplier.query.filter_by(user_id=current_user.id).first()
         if supplier_profile:
             stats["supplier_products"] = Product.query.filter_by(supplier_id=supplier_profile.id).count()
-            stats["supplier_orders"] = Order.query.join(OrderItem).join(Product).filter(Product.supplier_id == supplier_profile.id).distinct().count()
+            stats["supplier_orders"] = (
+                Order.query.join(OrderItem).join(Product)
+                .filter(Product.supplier_id == supplier_profile.id)
+                .distinct()
+                .count()
+            )
         else:
             stats["supplier_products"] = 0
             stats["supplier_orders"] = 0
-    elif current_user.is_general_user: # Changed from is_user
+
+    elif current_user.is_general_user:
         stats["user_orders"] = Order.query.filter_by(user_id=current_user.id).count()
 
-    chart_data = None
+    # -----------------------------
+    # LOW STOCK (Admin + Supplier)
+    # -----------------------------
     if current_user.is_admin:
-        order_trend_labels = [(datetime.utcnow() - timedelta(days=i)).strftime("%b %d") for i in range(6, -1, -1)]
-        order_trend_data = [Order.query.filter(db.func.date(Order.order_date) == (datetime.utcnow() - timedelta(days=i)).date()).count() for i in range(6, -1, -1)]
-        
-        category_data = db.session.query(Product.category, db.func.count(Product.id)).group_by(Product.category).all()
+        low_stock_q = (
+            db.session.query(
+                Inventory.id.label("inventory_id"),
+                Product.id.label("product_id"),
+                Product.name.label("product_name"),
+                Product.sku.label("sku"),
+                Inventory.quantity_on_hand.label("qoh"),
+                Inventory.reorder_level.label("reorder"),
+                Inventory.location.label("location"),
+                Supplier.name.label("supplier_name"),
+            )
+            .join(Product, Inventory.product_id == Product.id)
+            .outerjoin(Supplier, Product.supplier_id == Supplier.id)
+            .filter(Inventory.reorder_level.isnot(None))
+            .filter(Inventory.quantity_on_hand <= Inventory.reorder_level)
+            .order_by((Inventory.reorder_level - Inventory.quantity_on_hand).desc())
+            .limit(6)
+            .all()
+        )
+        low_stock = [dict(r._mapping) for r in low_stock_q]
+
+    elif current_user.is_supplier:
+        supplier_profile = Supplier.query.filter_by(user_id=current_user.id).first()
+        if supplier_profile:
+            low_stock_q = (
+                db.session.query(
+                    Inventory.id.label("inventory_id"),
+                    Product.id.label("product_id"),
+                    Product.name.label("product_name"),
+                    Product.sku.label("sku"),
+                    Inventory.quantity_on_hand.label("qoh"),
+                    Inventory.reorder_level.label("reorder"),
+                    Inventory.location.label("location"),
+                )
+                .join(Product, Inventory.product_id == Product.id)
+                .filter(Product.supplier_id == supplier_profile.id)
+                .filter(Inventory.reorder_level.isnot(None))
+                .filter(Inventory.quantity_on_hand <= Inventory.reorder_level)
+                .order_by((Inventory.reorder_level - Inventory.quantity_on_hand).desc())
+                .limit(6)
+                .all()
+            )
+            low_stock = [dict(r._mapping) for r in low_stock_q]
+
+    # -----------------------------
+    # LATEST ORDERS (role-aware)
+    # -----------------------------
+    if current_user.is_admin:
+        latest_orders = Order.query.order_by(Order.order_date.desc()).limit(8).all()
+
+    elif current_user.is_supplier:
+        supplier_profile = Supplier.query.filter_by(user_id=current_user.id).first()
+        if supplier_profile:
+            latest_orders = (
+                Order.query.join(OrderItem).join(Product)
+                .filter(Product.supplier_id == supplier_profile.id)
+                .distinct()
+                .order_by(Order.order_date.desc())
+                .limit(8)
+                .all()
+            )
+
+    elif current_user.is_general_user:
+        latest_orders = (
+            Order.query.filter_by(user_id=current_user.id)
+            .order_by(Order.order_date.desc())
+            .limit(8)
+            .all()
+        )
+
+    # -----------------------------
+    # ADMIN: TOP SUPPLIERS
+    # -----------------------------
+    if current_user.is_admin:
+        top_suppliers_q = (
+            db.session.query(
+                Supplier.id.label("supplier_id"),
+                Supplier.name.label("supplier_name"),
+                db.func.coalesce(db.func.sum(OrderItem.quantity), 0).label("units_sold"),
+                db.func.count(db.func.distinct(Order.id)).label("orders_count"),
+            )
+            .join(Product, Product.supplier_id == Supplier.id)
+            .join(OrderItem, OrderItem.product_id == Product.id)
+            .join(Order, Order.id == OrderItem.order_id)
+            .group_by(Supplier.id, Supplier.name)
+            .order_by(db.func.coalesce(db.func.sum(OrderItem.quantity), 0).desc())
+            .limit(5)
+            .all()
+        )
+        top_suppliers = [dict(r._mapping) for r in top_suppliers_q]
+
+    # -----------------------------
+    # CHARTS (Admin only) - efficient
+    # -----------------------------
+    if current_user.is_admin:
+        today = datetime.utcnow().date()
+        start_day = today - timedelta(days=6)
+
+        per_day = (
+            db.session.query(
+                db.func.date(Order.order_date).label("d"),
+                db.func.count(Order.id).label("c"),
+            )
+            .filter(db.func.date(Order.order_date) >= start_day)
+            .group_by(db.func.date(Order.order_date))
+            .all()
+        )
+        per_day_map = {row.d: row.c for row in per_day}
+
+        order_trend_labels = [(start_day + timedelta(days=i)).strftime("%b %d") for i in range(7)]
+        order_trend_data = [int(per_day_map.get(start_day + timedelta(days=i), 0)) for i in range(7)]
+
+        category_data = (
+            db.session.query(Product.category, db.func.count(Product.id))
+            .group_by(Product.category)
+            .all()
+        )
         category_labels = [c[0] if c[0] else "Uncategorized" for c in category_data]
-        category_counts = [c[1] for c in category_data]
+        category_counts = [int(c[1]) for c in category_data]
 
         chart_data = {
             "order_trend": {"labels": order_trend_labels, "data": order_trend_data},
-            "category_distribution": {"labels": category_labels, "data": category_counts}
+            "category_distribution": {"labels": category_labels, "data": category_counts},
         }
 
-    return render_template("dashboard.html", title="Dashboard", stats=stats, chart_data=chart_data)
-
+    return render_template(
+        "dashboard.html",
+        title="Dashboard",
+        stats=stats,
+        chart_data=chart_data,
+        low_stock=low_stock,
+        latest_orders=latest_orders,
+        top_suppliers=top_suppliers,
+    )
 
 @frontend_bp.route("/admin/users")
 @role_required("admin")
@@ -1318,7 +1456,7 @@ def delete_inventory_item(inventory_id):
     try:
         db.session.delete(inventory_item)
         db.session.commit()
-        flash(f"Inventory item for 	{product.name}	 deleted successfully!", "success")
+        flash(f"Inventory item for 	{product.name} deleted successfully!", "success")
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"Error deleting inventory item: {e}")

@@ -1,121 +1,225 @@
 {% extends "base.html" %}
+{% block title %}Order #{{ order.id }} • SCM Pro{% endblock %}
 
-{% block title %}Order #{{ order.id }} Details - SCM Pro{% endblock %}
-
-{% block page_title %}Order Details: #{{ order.id }}{% endblock %}
+{% macro status_badge(status) %}
+  {% set s = (status or "")|lower %}
+  {% if s == "pending" %}
+    <span class="badge rounded-pill text-bg-warning">Pending</span>
+  {% elif s == "processing" %}
+    <span class="badge rounded-pill text-bg-primary">Processing</span>
+  {% elif s == "shipped" %}
+    <span class="badge rounded-pill text-bg-info">Shipped</span>
+  {% elif s == "delivered" %}
+    <span class="badge rounded-pill text-bg-success">Delivered</span>
+  {% elif s == "cancelled" %}
+    <span class="badge rounded-pill text-bg-danger">Cancelled</span>
+  {% else %}
+    <span class="badge rounded-pill text-bg-secondary">{{ status }}</span>
+  {% endif %}
+{% endmacro %}
 
 {% block content %}
-<div class="container-fluid mt-3">
-    <div class="card">
-        <div class="card-header">
-            <div class="row">
-                <div class="col-md-6">
-                    <h4>Order ID: #{{ order.id }}</h4>
-                    <p><strong>Date:</strong> {{ order.order_date.strftime("%Y-%m-%d %H:%M:%S") }}</p>
-                    <p><strong>Customer:</strong> {{ order.placer.username if order.placer else "N/A" }}</p>
-                </div>
-                <div class="col-md-6 text-md-end">
-                    <p><strong>Overall Status:</strong> 
-                        <span class="badge 
-                            {%- if order.status == "Pending" %}bg-secondary
-                            {%- elif order.status == "Processing" %}bg-warning text-dark
-                            {%- elif order.status == "Shipped" %}bg-info
-                            {%- elif order.status == "Delivered" %}bg-success
-                            {%- elif order.status == "Cancelled" %}bg-danger
-                            {%- else %}bg-light text-dark
-                            {%- endif %}">{{ order.status }}</span>
-                    </p>
-                    <p><strong>Total Amount:</strong> ${{ "%.2f"|format(order.total_amount) }}</p>
-                </div>
-            </div>
-        </div>
-        <div class="card-body">
-            <h5>Order Items</h5>
-            {% if order.items %}
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Product Name</th>
-                        <th>SKU</th>
-                        <th>Quantity</th>
-                        <th>Price Per Item</th>
-                        <th>Item Status</th> {# New Column #}
-                        <th>Subtotal</th>
-                        {% if current_user.is_authenticated and current_user.role == 'supplier' %}
-                        <th>Actions</th> {# New Column for Suppliers #}
-                        {% endif %}
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in order.items %}
-                    <tr>
-                        <td>{{ item.product.name if item.product else "Product not found" }}</td>
-                        <td>{{ item.product.sku if item.product else "N/A" }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>${{ "%.2f"|format(item.price_at_purchase) }}</td> {# Corrected from price_per_item to price_at_purchase based on model #}
-                        <td>
-                            <span class="badge 
-                                {%- if item.status == "Pending" %}bg-secondary
-                                {%- elif item.status == "Processing" %}bg-warning text-dark
-                                {%- elif item.status == "Shipped" %}bg-info
-                                {%- elif item.status == "Delivered" %}bg-success
-                                {%- elif item.status == "Cancelled" %}bg-danger
-                                {%- else %}bg-light text-dark
-                                {%- endif %}">{{ item.status }}</span>
-                        </td>
-                        <td>${{ "%.2f"|format(item.quantity * item.price_at_purchase) }}</td> {# Corrected from price_per_item to price_at_purchase #}
-                        {% if current_user.is_authenticated and current_user.role == 'supplier' %}
-                        <td>
-                            {% if item.product and item.product.supplier_id == current_user.id %}
-                                {% if item.status not in ["Delivered", "Cancelled"] %}
-                                <form action="{{ url_for('frontend.update_supplier_order_item_status', item_id=item.id) }}" method="POST" class="form-inline">
-                                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                                    <input type="hidden" name="order_id" value="{{ order.id }}"/> {# To redirect back to the order detail page #}
-                                    <select name="status" class="form-select form-select-sm d-inline-block" style="width: auto; margin-right: 5px;">
-                                        <option value="Pending" {% if item.status == "Pending" %}selected{% endif %}>Pending</option>
-                                        <option value="Processing" {% if item.status == "Processing" %}selected{% endif %}>Processing</option>
-                                        <option value="Shipped" {% if item.status == "Shipped" %}selected{% endif %}>Shipped</option>
-                                        <option value="Delivered" {% if item.status == "Delivered" %}selected{% endif %}>Delivered</option>
-                                        <option value="Cancelled" {% if item.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
-                                    </select>
-                                    <button type="submit" class="btn btn-sm btn-primary">Update</button>
-                                </form>
-                                {% else %}
-                                    -
-                                {% endif %}
-                            {% else %}
-                                -
-                            {% endif %}
-                        </td>
-                        {% endif %}
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-            {% else %}
-            <div class="alert alert-info" role="alert">
-                No items found for this order.
-            </div>
-            {% endif %}
-        </div>
-        <div class="card-footer text-muted">
-            <a href="{{ url_for('frontend.view_orders') }}" class="btn btn-secondary">Back to Orders List</a>
-            {% if current_user.is_authenticated and current_user.role == "admin" and order.status not in ["Delivered", "Cancelled"] %}
-                <form action="{{ url_for('frontend.update_order_status', order_id=order.id) }}" method="POST" style="display:inline-block; margin-left: 10px;">
-                    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
-                    <label for="status_update_order" class="visually-hidden">Update Order Status:</label> {# Changed id to avoid conflict #}
-                    <select name="status" id="status_update_order" class="form-select form-select-sm d-inline-block" style="width: auto;">
-                        <option value="Pending" {% if order.status == "Pending" %}selected{% endif %}>Pending</option>
-                        <option value="Processing" {% if order.status == "Processing" %}selected{% endif %}>Processing</option>
-                        <option value="Shipped" {% if order.status == "Shipped" %}selected{% endif %}>Shipped</option>
-                        <option value="Delivered" {% if order.status == "Delivered" %}selected{% endif %}>Delivered</option>
-                        <option value="Cancelled" {% if order.status == "Cancelled" %}selected{% endif %}>Cancelled</option>
-                    </select>
-                    <button type="submit" class="btn btn-sm btn-primary ms-2">Update Order Status</button>
-                </form>
-            {% endif %}
-        </div>
+<div class="erp-pagewrap">
+
+  <!-- ================= PAGE HEADER ================= -->
+  <div class="erp-pagehead">
+    <div>
+      <div class="erp-breadcrumbs">
+        <span class="text-muted">Orders</span>
+        <span class="mx-2 text-muted">/</span>
+        <span>#{{ order.id }}</span>
+      </div>
+
+      <h1 class="erp-title mb-0">Order #{{ order.id }}</h1>
+
+      <div class="erp-subtitle">
+        Placed:
+        <span class="fw-semibold">
+          {{ order.order_date.strftime("%Y-%m-%d %H:%M") if order.order_date else "—" }}
+        </span>
+        <span class="ms-2">{{ status_badge(order.status) }}</span>
+      </div>
     </div>
+
+    <div class="erp-actions">
+      <a class="btn btn-sm btn-outline-primary"
+         href="{{ url_for('frontend.view_orders') }}">
+        <i class="bi bi-chevron-left me-1"></i>Back to Orders
+      </a>
+    </div>
+  </div>
+
+  <!-- ================= CONTENT ================= -->
+  <div class="row g-3 mt-2">
+
+    <!-- CUSTOMER -->
+    <div class="col-12 col-xl-5">
+      <div class="card erp-card">
+        <div class="card-header erp-cardhead">
+          <div class="erp-cardtitle">
+            <i class="bi bi-person-badge me-2"></i>Customer
+          </div>
+        </div>
+
+        <div class="card-body erp-cardbody">
+          <div class="mb-2">
+            <div class="text-muted small">Name</div>
+            <div class="fw-semibold">
+              {{ order.customer_name or (order.placer.username if order.placer else "N/A") }}
+            </div>
+          </div>
+
+          <div class="mb-2">
+            <div class="text-muted small">Email</div>
+            <div class="fw-semibold">
+              {{ order.customer_email or (order.placer.email if order.placer else "N/A") }}
+            </div>
+          </div>
+
+          <div>
+            <div class="text-muted small">Shipping address</div>
+            <div class="fw-semibold">
+              {{ order.shipping_address or "—" }}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- SUMMARY -->
+    <div class="col-12 col-xl-7">
+      <div class="card erp-card">
+        <div class="card-header erp-cardhead d-flex justify-content-between align-items-center">
+          <div>
+            <div class="erp-cardtitle">
+              <i class="bi bi-receipt me-2"></i>Summary
+            </div>
+            <div class="text-muted small">Overview</div>
+          </div>
+
+          <div class="text-end">
+            <div class="text-muted small">Total</div>
+            <div class="fw-bold fs-5">
+              {{ "%.2f"|format(order.total_amount or 0) }}
+            </div>
+          </div>
+        </div>
+
+        <div class="card-body erp-cardbody">
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="text-muted small">Order ID</div>
+              <div class="fw-semibold">#{{ order.id }}</div>
+            </div>
+            <div class="col-6">
+              <div class="text-muted small">Overall Status</div>
+              {{ status_badge(order.status) }}
+            </div>
+          </div>
+
+          {% if current_user.role == "admin" and order.status not in ["Delivered", "Cancelled"] %}
+            <hr class="my-3">
+            <form action="{{ url_for('frontend.update_order_status', order_id=order.id) }}"
+                  method="POST"
+                  class="d-flex gap-2 align-items-center">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+
+              <select name="status" class="form-select form-select-sm" style="width:auto;">
+                {% for s in ["Pending","Processing","Shipped","Delivered","Cancelled"] %}
+                  <option value="{{ s }}" {% if order.status == s %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select>
+
+              <button type="submit" class="btn btn-sm btn-primary">
+                <i class="bi bi-arrow-repeat me-1"></i>Update Order
+              </button>
+            </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- ITEMS -->
+    <div class="col-12">
+      <div class="card erp-card">
+        <div class="card-header erp-cardhead">
+          <div class="erp-cardtitle">
+            <i class="bi bi-list-check me-2"></i>Order Items
+          </div>
+        </div>
+
+        <div class="card-body erp-cardbody">
+          {% if order.items %}
+          <div class="table-responsive">
+            <table class="table table-hover align-middle mb-0">
+              <thead>
+                <tr>
+                  <th>Product</th>
+                  <th>SKU</th>
+                  <th>Qty</th>
+                  <th>Price</th>
+                  <th>Status</th>
+                  <th class="text-end">Subtotal</th>
+                  {% if current_user.role == "supplier" %}
+                    <th>Actions</th>
+                  {% endif %}
+                </tr>
+              </thead>
+
+              <tbody>
+                {% for item in order.items %}
+                <tr>
+                  <td class="fw-semibold">
+                    {{ item.product.name if item.product else "Product not found" }}
+                  </td>
+                  <td class="text-muted">
+                    {{ item.product.sku if item.product else "—" }}
+                  </td>
+                  <td>{{ item.quantity }}</td>
+                  <td>{{ "%.2f"|format(item.price_at_purchase or 0) }}</td>
+                  <td>{{ status_badge(item.status) }}</td>
+                  <td class="text-end fw-semibold">
+                    {{ "%.2f"|format((item.quantity or 0) * (item.price_at_purchase or 0)) }}
+                  </td>
+
+                  {% if current_user.role == "supplier" %}
+                  <td>
+                    {% if supplier_profile and item.product and item.product.supplier_id == supplier_profile.id %}
+                      {% if item.status not in ["Delivered", "Cancelled"] %}
+                      <form action="{{ url_for('frontend.update_supplier_order_item_status', item_id=item.id) }}"
+                            method="POST"
+                            class="d-flex gap-2">
+                        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
+                        <input type="hidden" name="order_id" value="{{ order.id }}"/>
+
+                        <select name="status" class="form-select form-select-sm" style="width:auto;">
+                          {% for s in ["Pending","Processing","Shipped","Delivered","Cancelled"] %}
+                            <option value="{{ s }}" {% if item.status == s %}selected{% endif %}>{{ s }}</option>
+                          {% endfor %}
+                        </select>
+
+                        <button class="btn btn-sm btn-primary">Update</button>
+                      </form>
+                      {% else %}
+                        <span class="text-muted">—</span>
+                      {% endif %}
+                    {% else %}
+                      <span class="text-muted">—</span>
+                    {% endif %}
+                  </td>
+                  {% endif %}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+          {% else %}
+            <div class="text-muted">No items found for this order.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+  </div>
 </div>
 {% endblock %}
-
