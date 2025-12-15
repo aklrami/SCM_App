@@ -27,13 +27,20 @@
 </head>
 
 <body>
+  <!-- Accessibility: skip link -->
+  <a href="#erpMainContent"
+     class="visually-hidden-focusable position-absolute top-0 start-0 m-2 px-3 py-2 bg-white border rounded-3 shadow-sm"
+     style="z-index: 3000;">
+    Skip to content
+  </a>
+
   {# Overlay used when sidebar is open on mobile #}
   <div id="sidebar-overlay" class="sidebar-overlay"></div>
 
   <div class="layout-wrapper erp-shell">
 
     <!-- Sidebar -->
-    <nav class="sidebar erp-sidebar" id="erpSidebar">
+    <nav class="sidebar erp-sidebar" id="erpSidebar" aria-label="Sidebar">
       <div class="sidebar-brand">
         <a href="{{ url_for('frontend.index') }}" class="brand-link">
           <span class="brand-icon"><i class="bi bi-box-seam-fill"></i></span>
@@ -78,6 +85,7 @@
                 <i class="bi bi-card-list me-2"></i>Orders
               </a>
             </li>
+
           {% elif current_user.role == 'supplier' %}
             <li>
               <a href="{{ url_for('frontend.view_suppliers') }}"
@@ -103,6 +111,7 @@
                 <i class="bi bi-card-list me-2"></i>Orders
               </a>
             </li>
+
           {% elif current_user.role == 'user' %}
             <li>
               <a href="{{ url_for('frontend.view_inventory') }}"
@@ -183,10 +192,11 @@
     <div class="main-content erp-main">
 
       <!-- Topbar (sticky) -->
-      <header class="erp-topbar">
+      <header class="erp-topbar" role="banner">
         <div class="topbar-left">
+          <!-- mobile only -->
           <button id="mobile-menu-toggle"
-                  class="btn btn-sm btn-light erp-icon-btn"
+                  class="btn btn-sm btn-light erp-icon-btn d-inline-flex d-md-none"
                   type="button"
                   aria-label="Toggle navigation">
             <i class="bi bi-list" aria-hidden="true"></i>
@@ -203,32 +213,59 @@
         </div>
 
         <div class="topbar-center">
-          <form class="erp-search" method="GET" action="{{ url_for('frontend.shop_products') }}">
+          {# Smart default search target #}
+          {% set _search_action =
+              url_for('frontend.shop_products')
+              if request.endpoint in ['frontend.shop_products','frontend.view_cart']
+              else (url_for('frontend.view_orders') if request.endpoint == 'frontend.view_orders' else url_for('frontend.shop_products'))
+          %}
+          <form class="erp-search" method="GET" action="{{ _search_action }}">
             <i class="bi bi-search"></i>
-           <input name="search"
-       type="search"
-       placeholder="Search products, orders, suppliers…"
-       autocomplete="off"
-       value="{{ request.args.get('search','') }}">
+            <input name="search"
+                   type="search"
+                   placeholder="Search products, orders, suppliers…"
+                   autocomplete="off"
+                   value="{{ request.args.get('search','') }}">
             <span class="erp-kbd d-none d-md-inline">Ctrl K</span>
           </form>
         </div>
 
         <div class="topbar-right">
           {% if current_user.is_authenticated %}
-            <!-- Notifications (UI shell; later we wire real data) -->
+
+            <!-- Notifications (safe defaults if not provided) -->
+            {% set notif_count = notif_count|default(0) %}
+            {% set notifications = notifications|default([]) %}
+
             <div class="dropdown">
-              <button class="btn btn-sm btn-light erp-icon-btn"
+              <button class="btn btn-sm btn-light erp-icon-btn position-relative"
                       type="button"
                       data-bs-toggle="dropdown"
-                      aria-expanded="false">
+                      aria-expanded="false"
+                      aria-label="Notifications">
                 <i class="bi bi-bell"></i>
+                {% if notif_count and notif_count > 0 %}
+                  <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    {{ notif_count }}
+                  </span>
+                {% endif %}
               </button>
-              <div class="dropdown-menu dropdown-menu-end erp-dropdown">
+
+              <div class="dropdown-menu dropdown-menu-end erp-dropdown" style="min-width: 320px;">
                 <div class="dropdown-header">Notifications</div>
-                <div class="px-3 py-2 small text-muted">
-                  Low stock, delayed orders, pending approvals will appear here.
-                </div>
+
+                {% if notifications and notifications|length > 0 %}
+                  {% for n in notifications %}
+                    <a class="dropdown-item d-flex flex-column gap-1 py-2" href="{{ n.url }}">
+                      <div class="fw-semibold">{{ n.text }}</div>
+                      {% if n.meta %}
+                        <div class="small text-muted">{{ n.meta }}</div>
+                      {% endif %}
+                    </a>
+                  {% endfor %}
+                {% else %}
+                  <div class="px-3 py-2 small text-muted">You’re all caught up. ✅</div>
+                {% endif %}
               </div>
             </div>
 
@@ -254,6 +291,7 @@
                 <li><a class="dropdown-item text-danger" href="{{ url_for('frontend.logout') }}"><i class="bi bi-box-arrow-right me-2"></i>Logout</a></li>
               </ul>
             </div>
+
           {% else %}
             <a class="btn btn-sm btn-primary" href="{{ url_for('frontend.login') }}">Login</a>
           {% endif %}
@@ -261,14 +299,21 @@
       </header>
 
       <!-- Page container -->
-      <main class="container-fluid erp-page">
+      <main id="erpMainContent" class="container-fluid erp-page" role="main">
 
-        <!-- Flash → Toasts (professional) -->
+        <!-- Flash → Toasts -->
         <div class="toast-container position-fixed top-0 end-0 p-3" style="z-index: 2000;">
           {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
               {% for category, message in messages %}
-                <div class="toast erp-toast align-items-center text-bg-{{ 'danger' if category in ['danger','error'] else category }} border-0 mb-2"
+                {% set cat = category|lower %}
+                {% set toast_bg =
+                    'danger' if cat in ['danger','error'] else
+                    'warning' if cat in ['warning'] else
+                    'success' if cat in ['success'] else
+                    'info'
+                %}
+                <div class="toast erp-toast align-items-center text-bg-{{ toast_bg }} border-0 mb-2"
                      role="alert" aria-live="assertive" aria-atomic="true"
                      data-bs-delay="4500">
                   <div class="d-flex">
@@ -308,8 +353,6 @@
 
   <!-- Custom JS -->
   <script src="{{ url_for('static', filename='js/app.js') }}"></script>
-
-  
 
   {% block scripts_extra %}{% endblock %}
 </body>

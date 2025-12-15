@@ -1,17 +1,30 @@
 ﻿/*
-Enterprise Modern CSS for Supply Chain Management Project
-ERP-style UI: clean, structured, professional.
-
-Palette:
-- Primary: #0052CC
-- Text: #111827
-- Muted: rgba(15,23,42,.60)
-- Background: #f6f8fb
-- Sidebar: #111827
+====================================================
+ Enterprise Modern CSS
+ SCM / ERP Thesis Project
+ Clean • Structured • Professional
+====================================================
 */
 
 /* ============================
-   Base / Resets
+   Design Tokens
+   ============================ */
+:root {
+    --erp-bg: #f6f8fb;
+    --erp-card: #ffffff;
+    --erp-border: rgba(15,23,42,.08);
+    --erp-muted: rgba(15,23,42,.62);
+    --erp-muted-2: rgba(15,23,42,.45);
+    --erp-primary: #0052CC;
+    --erp-success: #16a34a;
+    --erp-warning: #f59e0b;
+    --erp-danger: #dc2626;
+    --erp-shadow: 0 14px 34px rgba(15,23,42,.08);
+    --erp-shadow-hover: 0 22px 54px rgba(15,23,42,.12);
+}
+
+/* ============================
+   Reset & Base
    ============================ */
 *,
 *::before,
@@ -25,17 +38,18 @@ html, body {
 
 body {
     margin: 0;
-    padding: 0;
-    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
     font-size: 16px;
     line-height: 1.6;
     color: #111827;
-    background: #f6f8fb;
+    background: var(--erp-bg);
     overflow-x: hidden;
-    overflow-y: hidden; /* desktop: main scroll happens in .erp-main */
+    overflow-y: hidden;
 }
 
-/* Wrapper for sidebar + content */
+/* ============================
+   Layout
+   ============================ */
 .layout-wrapper {
     display: flex;
     min-height: 100vh;
@@ -44,51 +58,26 @@ body {
 /* ============================
    Typography
    ============================ */
-h1, h2, h3, h4, h5, h6 {
-    color: #111827;
-    margin-top: 1.15rem;
-    margin-bottom: 0.7rem;
-    font-weight: 800;
-    letter-spacing: 0.2px;
+h1, h2, h3, h4, h5 {
+    font-weight: 900;
+    letter-spacing: .2px;
 }
 
-h1 {
-    font-size: 2.0rem;
+.erp-title {
+    font-size: 1.45rem;
 }
 
-h2 {
-    font-size: 1.75rem;
+.erp-subtitle {
+    color: var(--erp-muted);
+    margin-top: 4px;
 }
-
-h3 {
-    font-size: 1.4rem;
-}
-
-h4 {
-    font-size: 1.15rem;
-}
-
-/* ============================
-   Links
-   ============================ */
-a {
-    color: #0052CC;
-    text-decoration: none;
-    transition: opacity 0.2s ease-in-out, color 0.2s ease-in-out;
-}
-
-    a:hover {
-        color: #0043a8;
-        opacity: 0.95;
-        text-decoration: none;
-    }
 
 /* ============================
    Buttons
    ============================ */
 .btn {
-    border-radius: 12px;
-    transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
+    border-radius: 14px;
+    transition: transform .18s ease, box-shadow .18s ease;
 }
 
     .btn:hover {
@@ -96,9 +85,8 @@ a {
         box-shadow: 0 10px 22px rgba(15,23,42,.12);
     }
 
-.btn-link:hover {
-    transform: none;
-    box-shadow: none;
+.btn-outline-primary {
+    border-width: 1.5px;
 }
 
 /* ============================
@@ -107,7 +95,6 @@ a {
 .form-control,
 .form-select {
     border-radius: 12px;
-    border: 1px solid rgba(15,23,42,.14);
 }
 
     .form-control:focus,
@@ -117,51 +104,174 @@ a {
     }
 
 /* ============================
-   Cards (Enterprise)
+   Sidebar
    ============================ */
-.card {
-    border-radius: 16px;
-    border: 1px solid rgba(15,23,42,.08);
-    background: #fff;
-    box-shadow: 0 10px 26px rgba(15,23,42,.06);
-    transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
+.sidebar {
+    width: 250px;
+    background: #111827;
+    color: #fff;
+    padding: 18px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    overflow-y: auto;
+    z-index: 1000;
 }
 
-    .card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 18px 38px rgba(15,23,42,.10);
-    }
-
-.card-header {
-    background: rgba(15,23,42,.02);
-    color: #111827;
-    border-bottom: 1px solid rgba(15,23,42,.06);
+.sidebar-brand .brand-link {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    color: #fff;
+    text-decoration: none;
     font-weight: 800;
 }
 
-/* Your dashboard uses .erp-card, not Bootstrap .card */
-.erp-card {
-    border-radius: 16px;
-    border: 1px solid rgba(15,23,42,.08);
+.brand-icon {
+    width: 38px;
+    height: 38px;
+    border-radius: 14px;
+    background: rgba(255,255,255,.08);
+    display: grid;
+    place-items: center;
+}
+
+.brand-sub {
+    font-size: .78rem;
+    opacity: .7;
+}
+
+.sidebar-nav {
+    list-style: none;
+    padding: 0;
+    margin-top: 16px;
+}
+
+    .sidebar-nav li a {
+        display: block;
+        padding: 10px 12px;
+        border-radius: 12px;
+        color: rgba(255,255,255,.72);
+    }
+
+        .sidebar-nav li a:hover,
+        .sidebar-nav li a.active {
+            background: var(--erp-primary);
+            color: #fff;
+        }
+
+.nav-sep {
+    height: 1px;
+    background: rgba(255,255,255,.10);
+    margin: 12px 0;
+}
+
+/* ============================
+   Main Content
+   ============================ */
+.erp-main {
+    margin-left: 250px;
+    flex-grow: 1;
+    overflow-y: auto;
+    max-height: 100vh;
+}
+
+.erp-page {
+    padding: 16px;
+}
+
+/* ============================
+   Topbar
+   ============================ */
+.erp-topbar {
+    position: sticky;
+    top: 0;
+    background: rgba(255,255,255,.92);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid rgba(15,23,42,.08);
+    box-shadow: 0 10px 30px rgba(15,23,42,.06);
+    z-index: 1020;
+    padding: 10px 14px;
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+
+.topbar-left,
+.topbar-center,
+.topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.topbar-center {
+    flex: 1;
+    justify-content: center;
+}
+
+.erp-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
     background: #fff;
-    box-shadow: 0 10px 26px rgba(15,23,42,.06);
-    transition: transform 0.18s ease-in-out, box-shadow 0.18s ease-in-out;
+    border-radius: 14px;
+    border: 1px solid rgba(15,23,42,.10);
+    padding: 10px 12px;
+    width: min(760px, 100%);
+}
+
+    .erp-search input {
+        border: none;
+        outline: none;
+        width: 100%;
+    }
+
+.erp-kbd {
+    font-size: .75rem;
+    border: 1px solid rgba(15,23,42,.18);
+    border-radius: 10px;
+    padding: 2px 8px;
+    color: var(--erp-muted);
+}
+
+.erp-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 10px;
+    background: rgba(15,23,42,.08);
+    display: grid;
+    place-items: center;
+    font-weight: 900;
+}
+
+/* ============================
+   Cards
+   ============================ */
+.erp-card {
+    background: var(--erp-card);
+    border-radius: 18px;
+    border: 1px solid var(--erp-border);
+    box-shadow: var(--erp-shadow);
+    transition: transform .18s ease, box-shadow .18s ease;
 }
 
     .erp-card:hover {
         transform: translateY(-2px);
-        box-shadow: 0 18px 38px rgba(15,23,42,.10);
+        box-shadow: var(--erp-shadow-hover);
     }
 
 .erp-cardhead {
     padding: 14px 16px;
     border-bottom: 1px solid rgba(15,23,42,.06);
-    background: rgba(15,23,42,.02);
 }
 
 .erp-cardtitle {
     font-weight: 900;
-    color: #111827;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .erp-cardbody {
@@ -172,451 +282,187 @@ a {
    Tables
    ============================ */
 .table thead th {
-    background-color: rgba(15,23,42,.02);
-    color: #111827;
+    font-size: .84rem;
     font-weight: 800;
     border-bottom: 1px solid rgba(15,23,42,.08);
 }
 
 .table-hover tbody tr:hover {
-    background-color: rgba(0,82,204,.05);
+    background: rgba(0,82,204,.05);
 }
 
 /* ============================
-   Alerts / Toast animation (if used)
+   Badges
    ============================ */
-.alert {
-    animation: slideInDown 0.25s ease-out;
-}
-
-/* ============================
-   Sidebar (Desktop)
-   ============================ */
-.sidebar {
-    width: 250px;
-    background: #111827;
-    color: #fff;
-    padding: 18px;
-    height: 100vh;
-    position: fixed;
-    top: 0;
-    left: 0;
-    overflow-y: auto;
-    box-shadow: 2px 0 18px rgba(15,23,42,.18);
-    z-index: 1000;
-}
-
-/* Base.html uses .sidebar-brand/.brand-link — add styling for it */
-.sidebar-brand .brand-link {
-    color: #fff;
-    text-decoration: none;
+.badge.rounded-pill {
     font-weight: 800;
-    letter-spacing: 0.2px;
-    display: flex;
-    gap: 10px;
-    align-items: center;
-}
-
-    .sidebar-brand .brand-link:hover {
-        color: #c7d2fe;
-    }
-
-.brand-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 14px;
-    display: grid;
-    place-items: center;
-    background: rgba(255,255,255,.08);
-}
-
-.brand-title {
-    display: block;
-    line-height: 1.1;
-}
-
-.brand-sub {
-    display: block;
-    font-size: .78rem;
-    opacity: .7;
-    font-weight: 600;
-}
-
-/* Sidebar nav in base.html uses .sidebar-nav */
-.sidebar-nav {
-    list-style: none;
-    padding: 0;
-    margin: 1rem 0 0 0;
-}
-
-    .sidebar-nav li a {
-        color: rgba(255,255,255,.72);
-        padding: 10px 12px;
-        display: block;
-        border-radius: 12px;
-        transition: background-color 0.18s ease-in-out, color 0.18s ease-in-out, transform 0.18s ease-in-out;
-    }
-
-        .sidebar-nav li a:hover,
-        .sidebar-nav li a.active {
-            background: rgba(0,82,204,.95);
-            color: #fff;
-            text-decoration: none;
-            transform: translateX(2px);
-        }
-
-        .sidebar-nav li a i {
-            transition: transform 0.18s ease-in-out;
-        }
-
-        .sidebar-nav li a:hover i,
-        .sidebar-nav li a.active i {
-            transform: scale(1.06);
-        }
-
-.nav-sep {
-    height: 1px;
-    background: rgba(255,255,255,.10);
-    margin: 12px 0;
-    list-style: none;
+    padding: .45rem .7rem;
 }
 
 /* ============================
-   Main Content (Desktop)
-   ============================ */
-.erp-main,
-.main-content {
-    margin-left: 250px; /* same as sidebar */
-    padding: 0;
-    flex-grow: 1;
-    overflow-y: auto; /* scroll inside content */
-    max-height: 100vh;
-}
-
-/* Page wrapper in base.html */
-.erp-page {
-    padding-top: 14px;
-    padding-bottom: 18px;
-}
-
-/* Footer */
-.erp-footer,
-.footer {
-    background: rgba(255,255,255,.85);
-    color: rgba(15,23,42,.60);
-    padding: 1rem;
-    text-align: center;
-    border-top: 1px solid rgba(15,23,42,.08);
-}
-
-/* ============================
-   ERP Topbar + Page spacing
-   ============================ */
-.erp-topbar {
-    position: sticky;
-    top: 0;
-    z-index: 1020;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 14px;
-    padding: 10px 14px;
-    background: rgba(255,255,255,.92);
-    backdrop-filter: blur(10px);
-    border-bottom: 1px solid rgba(15,23,42,.08);
-}
-
-.topbar-left, .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.topbar-center {
-    flex: 1;
-    display: flex;
-    justify-content: center;
-}
-
-.erp-icon-btn {
-    border-radius: 12px;
-}
-
-.erp-app-pill {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 6px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(15,23,42,.10);
-    background: rgba(15,23,42,.02);
-    font-size: .82rem;
-    font-weight: 700;
-}
-
-    .erp-app-pill.subtle {
-        opacity: .78;
-        font-weight: 600;
-    }
-
-.erp-search {
-    width: min(760px, 100%);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff;
-    border: 1px solid rgba(15,23,42,.10);
-    border-radius: 14px;
-    padding: 10px 12px;
-    box-shadow: 0 10px 24px rgba(15,23,42,.06);
-}
-
-    .erp-search i {
-        opacity: .6;
-    }
-
-    .erp-search input {
-        border: 0;
-        outline: 0;
-        width: 100%;
-        background: transparent;
-        font-size: .95rem;
-    }
-
-.erp-kbd {
-    font-size: .75rem;
-    color: rgba(15,23,42,.55);
-    border: 1px solid rgba(15,23,42,.18);
-    padding: 2px 8px;
-    border-radius: 10px;
-}
-
-.erp-user-btn {
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-}
-
-.erp-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 10px;
-    display: grid;
-    place-items: center;
-    font-weight: 900;
-    background: rgba(15,23,42,.08);
-}
-
-.container-fluid {
-    padding-left: 16px;
-    padding-right: 16px;
-}
-
-/* Dropdown look */
-.erp-dropdown {
-    border-radius: 14px;
-    border: 1px solid rgba(15,23,42,.10);
-    box-shadow: 0 18px 40px rgba(15,23,42,.12);
-}
-
-/* ============================
-   Dashboard Helpers
+   Page Header
    ============================ */
 .erp-pagehead {
     display: flex;
-    align-items: flex-start;
     justify-content: space-between;
     gap: 14px;
-    padding: 12px 2px 8px;
+    margin-bottom: 8px;
 }
 
 .erp-breadcrumbs {
     font-size: .86rem;
-    color: rgba(15,23,42,.60);
+    color: var(--erp-muted);
 }
 
-.erp-title {
-    font-size: 1.45rem;
-    font-weight: 900;
-    margin: 2px 0 0;
-}
-
-.erp-subtitle {
-    margin-top: 6px;
-    color: rgba(15,23,42,.60);
-}
-
+/* ============================
+   Chips
+   ============================ */
 .erp-chip {
     display: inline-flex;
     align-items: center;
+    gap: 6px;
     padding: 2px 10px;
     border-radius: 999px;
     border: 1px solid rgba(15,23,42,.12);
     font-size: .78rem;
-    background: rgba(15,23,42,.02);
 }
 
-/* KPI card style */
-.erp-kpi {
-    padding: 14px 16px;
+/* ============================
+   Divider
+   ============================ */
+.erp-divider {
+    height: 1px;
+    background: rgba(15,23,42,.08);
+    margin: 14px 0;
 }
 
-    .erp-kpi .kpi-label {
-        font-size: .80rem;
-        color: rgba(15,23,42,.60);
+/* =================================================
+   ORDER DETAIL – TIMELINE (ICON STEPPER)
+   ================================================= */
+.erp-timeline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.erp-step {
+    flex: 1;
+    text-align: center;
+    position: relative;
+}
+
+    .erp-step::after {
+        content: "";
+        position: absolute;
+        top: 17px;
+        left: 50%;
+        right: -50%;
+        height: 2px;
+        background: rgba(15,23,42,.12);
+        z-index: 0;
     }
 
-    .erp-kpi .kpi-value {
-        font-size: 2rem;
-        font-weight: 900;
-        margin-top: 4px;
+    .erp-step:last-child::after {
+        display: none;
     }
 
-    .erp-kpi .kpi-meta {
-        font-size: .82rem;
-        color: rgba(15,23,42,.55);
-        margin-top: 6px;
-    }
-
-    .erp-kpi .kpi-icon {
-        width: 44px;
-        height: 44px;
-        border-radius: 16px;
+    .erp-step .dot {
+        width: 34px;
+        height: 34px;
+        border-radius: 999px;
+        background: rgba(15,23,42,.10);
         display: grid;
         place-items: center;
-        background: rgba(15,23,42,.06);
-        font-size: 1.25rem;
+        margin: 0 auto 8px auto;
+        position: relative;
+        z-index: 1;
     }
 
-    .erp-kpi .kpi-link {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-top: 12px;
-        padding-top: 10px;
-        border-top: 1px solid rgba(15,23,42,.08);
-        text-decoration: none;
-        color: rgba(15,23,42,.85);
-        font-weight: 800;
-        font-size: .9rem;
-    }
-
-    .erp-kpi.warning {
-        background: linear-gradient(180deg, rgba(255,193,7,.18), rgba(255,193,7,.06));
-    }
-
-/* Chart height consistency */
-.chart-box, .erp-chartbox {
-    height: 320px;
-}
-
-@media (max-width: 575.98px) {
-    .chart-box, .erp-chartbox {
-        height: 260px;
-    }
-}
-
-/* ============================
-   Overlay (mobile sidebar)
-   ============================ */
-.sidebar-overlay {
-    display: none;
-}
-
-/* ============================
-   Responsive
-   ============================ */
-@media (max-width: 992px) {
-    .sidebar {
-        width: 220px;
-    }
-
-    .erp-main, .main-content {
-        margin-left: 220px;
-    }
-}
-
-/* ✅ Mobile: off-canvas sidebar WITHOUT fake body padding */
-@media (max-width: 768px) {
-    body {
-        overflow-y: auto;
-        overflow-x: hidden;
-        padding-top: 0; /* IMPORTANT: no missing .mobile-header spacing */
-    }
-
-    .layout-wrapper {
-        display: block;
-        min-height: auto;
-    }
-
-    /* Sidebar off-canvas */
-    .sidebar {
-        top: 0;
-        height: 100vh;
-        width: 260px;
-        transform: translateX(-100%);
-        transition: transform 0.25s ease-in-out;
-        position: fixed;
-        left: 0;
-        z-index: 1040;
-    }
-
-    .sidebar-overlay {
-        position: fixed;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.45);
-        opacity: 0;
-        pointer-events: none;
-        transition: opacity 0.2s ease-in-out;
-        display: block;
-        z-index: 1030;
-    }
-
-    body.sidebar-open .sidebar {
-        transform: translateX(0);
-    }
-
-    body.sidebar-open .sidebar-overlay {
-        opacity: 1;
-        pointer-events: auto;
-    }
-
-    .erp-main, .main-content {
-        margin-left: 0;
-        max-height: none;
-        overflow: visible;
-    }
-
-    table {
-        font-size: 0.9rem;
-    }
-
-        table th, table td {
-            padding: 0.45rem;
+        .erp-step .dot i {
+            font-size: 1rem;
+            opacity: .9;
         }
 
-    .erp-footer, .footer {
-        padding: 0.75rem;
-        font-size: 0.9rem;
+    .erp-step .label {
+        font-size: .78rem;
+        font-weight: 800;
+        color: var(--erp-muted-2);
     }
 
-    /* optional: let search align left on tiny screens */
-    .topbar-center {
-        justify-content: flex-start;
+    .erp-step.active .dot {
+        background: rgba(0,82,204,.12);
+        box-shadow: 0 0 0 6px rgba(0,82,204,.10), inset 0 0 0 1px rgba(0,82,204,.25);
+    }
+
+        .erp-step.active .dot i {
+            color: var(--erp-primary);
+        }
+
+    .erp-step.done .dot {
+        background: rgba(22,163,74,.12);
+        box-shadow: 0 0 0 6px rgba(22,163,74,.10), inset 0 0 0 1px rgba(22,163,74,.25);
+    }
+
+        .erp-step.done .dot i {
+            color: var(--erp-success);
+        }
+
+    .erp-step.active .label,
+    .erp-step.done .label {
+        color: rgba(15,23,42,.85);
+    }
+
+/* ============================
+   Footer
+   ============================ */
+.erp-footer {
+    text-align: center;
+    padding: 1rem;
+    color: var(--erp-muted);
+    border-top: 1px solid rgba(15,23,42,.08);
+    background: rgba(255,255,255,.85);
+}
+
+/* ============================
+   Mobile
+   ============================ */
+@media (max-width: 768px) {
+    .erp-main {
+        margin-left: 0;
+    }
+
+    body {
+        overflow-y: auto;
+    }
+
+    .erp-step .label {
+        font-size: .72rem;
     }
 }
 
 /* ============================
-   Animations
+   Print
    ============================ */
-@keyframes slideInDown {
-    from {
-        transform: translateY(-12px);
-        opacity: 0;
+@media print {
+    .sidebar,
+    .erp-topbar,
+    .erp-actions,
+    .btn {
+        display: none !important;
     }
 
-    to {
-        transform: translateY(0);
-        opacity: 1;
+    body {
+        background: #fff;
+    }
+
+    .erp-main {
+        margin: 0 !important;
+    }
+
+    .erp-card {
+        box-shadow: none !important;
+        border: 1px solid #ddd;
     }
 }

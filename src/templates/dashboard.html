@@ -209,6 +209,25 @@
         </div>
       </div>
     </div>
+<div class="erp-card mt-3">
+  <div class="erp-cardhead">
+    <div class="erp-cardtitle"><i class="bi bi-activity me-2"></i>Risk & insights</div>
+  </div>
+  <div class="erp-cardbody">
+    <div class="d-flex justify-content-between mb-2">
+      <div class="text-muted small">Low-stock items</div>
+      <div class="fw-semibold">{{ (low_stock|length) if low_stock else 0 }}</div>
+    </div>
+    <div class="d-flex justify-content-between mb-2">
+      <div class="text-muted small">Pending orders</div>
+      <div class="fw-semibold">{{ stats.pending_orders if stats and current_user.role=="admin" else "—" }}</div>
+    </div>
+    <div class="erp-divider"></div>
+    <div class="text-muted small">
+      Tip: Keep reorder levels aligned with demand to reduce stockout risk.
+    </div>
+  </div>
+</div>
 
     <!-- Low stock -->
     {% if current_user.role in ['admin','supplier'] %}

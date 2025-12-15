@@ -966,17 +966,28 @@ def view_orders():
 @login_required
 def view_order_detail(order_id):
     order = Order.query.get_or_404(order_id)
+
+    supplier_profile = None
+
     # Security: Ensure user has permission to view this order
     if current_user.is_general_user and order.user_id != current_user.id:
         flash("You do not have permission to view this order.", "danger")
         abort(403)
+
     elif current_user.is_supplier:
         supplier_profile = Supplier.query.filter_by(user_id=current_user.id).first()
-        if not supplier_profile or not any(item.product.supplier_id == supplier_profile.id for item in order.items):
+        if not supplier_profile or not any(item.product and item.product.supplier_id == supplier_profile.id for item in order.items):
             flash("You do not have permission to view this order or it contains no items from you.", "danger")
             abort(403)
+
     # Admin can view any order
-    return render_template("order_detail.html", title=f"Order #{order.id}", order=order)
+    return render_template(
+        "order_detail.html",
+        title=f"Order #{order.id}",
+        order=order,
+        supplier_profile=supplier_profile
+    )
+
 
 @frontend_bp.route("/order/update_status/<int:order_id>", methods=["POST"])
 @role_required("admin")
