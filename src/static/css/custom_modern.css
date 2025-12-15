@@ -2,7 +2,7 @@
 ====================================================
  Enterprise Modern CSS
  SCM / ERP Thesis Project
- Clean • Structured • Professional
+ CLEAN + FIXED MOBILE SIDEBAR VERSION
 ====================================================
 */
 
@@ -17,8 +17,6 @@
     --erp-muted-2: rgba(15,23,42,.45);
     --erp-primary: #0052CC;
     --erp-success: #16a34a;
-    --erp-warning: #f59e0b;
-    --erp-danger: #dc2626;
     --erp-shadow: 0 14px 34px rgba(15,23,42,.08);
     --erp-shadow-hover: 0 22px 54px rgba(15,23,42,.12);
 }
@@ -39,12 +37,9 @@ html, body {
 body {
     margin: 0;
     font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
-    font-size: 16px;
-    line-height: 1.6;
-    color: #111827;
     background: var(--erp-bg);
+    color: #111827;
     overflow-x: hidden;
-    overflow-y: hidden;
 }
 
 /* ============================
@@ -56,55 +51,7 @@ body {
 }
 
 /* ============================
-   Typography
-   ============================ */
-h1, h2, h3, h4, h5 {
-    font-weight: 900;
-    letter-spacing: .2px;
-}
-
-.erp-title {
-    font-size: 1.45rem;
-}
-
-.erp-subtitle {
-    color: var(--erp-muted);
-    margin-top: 4px;
-}
-
-/* ============================
-   Buttons
-   ============================ */
-.btn {
-    border-radius: 14px;
-    transition: transform .18s ease, box-shadow .18s ease;
-}
-
-    .btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 10px 22px rgba(15,23,42,.12);
-    }
-
-.btn-outline-primary {
-    border-width: 1.5px;
-}
-
-/* ============================
-   Forms
-   ============================ */
-.form-control,
-.form-select {
-    border-radius: 12px;
-}
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: rgba(0,82,204,.45);
-        box-shadow: 0 0 0 .2rem rgba(0,82,204,.12);
-    }
-
-/* ============================
-   Sidebar
+   Sidebar (Desktop default)
    ============================ */
 .sidebar {
     width: 250px;
@@ -116,69 +63,35 @@ h1, h2, h3, h4, h5 {
     left: 0;
     height: 100vh;
     overflow-y: auto;
-    z-index: 1000;
-}
-
-.sidebar-brand .brand-link {
-    display: flex;
-    gap: 10px;
-    align-items: center;
-    color: #fff;
-    text-decoration: none;
-    font-weight: 800;
-}
-
-.brand-icon {
-    width: 38px;
-    height: 38px;
-    border-radius: 14px;
-    background: rgba(255,255,255,.08);
-    display: grid;
-    place-items: center;
-}
-
-.brand-sub {
-    font-size: .78rem;
-    opacity: .7;
-}
-
-.sidebar-nav {
-    list-style: none;
-    padding: 0;
-    margin-top: 16px;
-}
-
-    .sidebar-nav li a {
-        display: block;
-        padding: 10px 12px;
-        border-radius: 12px;
-        color: rgba(255,255,255,.72);
-    }
-
-        .sidebar-nav li a:hover,
-        .sidebar-nav li a.active {
-            background: var(--erp-primary);
-            color: #fff;
-        }
-
-.nav-sep {
-    height: 1px;
-    background: rgba(255,255,255,.10);
-    margin: 12px 0;
+    z-index: 2010;
+    transition: transform .25s ease;
 }
 
 /* ============================
-   Main Content
+   Main Content (Desktop)
    ============================ */
 .erp-main {
     margin-left: 250px;
     flex-grow: 1;
-    overflow-y: auto;
     max-height: 100vh;
+    overflow-y: auto;
 }
 
 .erp-page {
     padding: 16px;
+}
+
+/* ============================
+   Overlay (for mobile sidebar)
+   ============================ */
+#sidebar-overlay.sidebar-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,.45);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity .2s ease;
+    z-index: 2000; /* below sidebar, above everything else */
 }
 
 /* ============================
@@ -187,63 +100,13 @@ h1, h2, h3, h4, h5 {
 .erp-topbar {
     position: sticky;
     top: 0;
+    z-index: 1020;
     background: rgba(255,255,255,.92);
     backdrop-filter: blur(10px);
     border-bottom: 1px solid rgba(15,23,42,.08);
-    box-shadow: 0 10px 30px rgba(15,23,42,.06);
-    z-index: 1020;
     padding: 10px 14px;
     display: flex;
     justify-content: space-between;
-    gap: 12px;
-}
-
-.topbar-left,
-.topbar-center,
-.topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-
-.topbar-center {
-    flex: 1;
-    justify-content: center;
-}
-
-.erp-search {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    background: #fff;
-    border-radius: 14px;
-    border: 1px solid rgba(15,23,42,.10);
-    padding: 10px 12px;
-    width: min(760px, 100%);
-}
-
-    .erp-search input {
-        border: none;
-        outline: none;
-        width: 100%;
-    }
-
-.erp-kbd {
-    font-size: .75rem;
-    border: 1px solid rgba(15,23,42,.18);
-    border-radius: 10px;
-    padding: 2px 8px;
-    color: var(--erp-muted);
-}
-
-.erp-avatar {
-    width: 28px;
-    height: 28px;
-    border-radius: 10px;
-    background: rgba(15,23,42,.08);
-    display: grid;
-    place-items: center;
-    font-weight: 900;
 }
 
 /* ============================
@@ -254,24 +117,11 @@ h1, h2, h3, h4, h5 {
     border-radius: 18px;
     border: 1px solid var(--erp-border);
     box-shadow: var(--erp-shadow);
-    transition: transform .18s ease, box-shadow .18s ease;
 }
-
-    .erp-card:hover {
-        transform: translateY(-2px);
-        box-shadow: var(--erp-shadow-hover);
-    }
 
 .erp-cardhead {
     padding: 14px 16px;
     border-bottom: 1px solid rgba(15,23,42,.06);
-}
-
-.erp-cardtitle {
-    font-weight: 900;
-    display: flex;
-    align-items: center;
-    gap: 8px;
 }
 
 .erp-cardbody {
@@ -279,69 +129,10 @@ h1, h2, h3, h4, h5 {
 }
 
 /* ============================
-   Tables
+   Timeline (Order Details)
    ============================ */
-.table thead th {
-    font-size: .84rem;
-    font-weight: 800;
-    border-bottom: 1px solid rgba(15,23,42,.08);
-}
-
-.table-hover tbody tr:hover {
-    background: rgba(0,82,204,.05);
-}
-
-/* ============================
-   Badges
-   ============================ */
-.badge.rounded-pill {
-    font-weight: 800;
-    padding: .45rem .7rem;
-}
-
-/* ============================
-   Page Header
-   ============================ */
-.erp-pagehead {
-    display: flex;
-    justify-content: space-between;
-    gap: 14px;
-    margin-bottom: 8px;
-}
-
-.erp-breadcrumbs {
-    font-size: .86rem;
-    color: var(--erp-muted);
-}
-
-/* ============================
-   Chips
-   ============================ */
-.erp-chip {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    padding: 2px 10px;
-    border-radius: 999px;
-    border: 1px solid rgba(15,23,42,.12);
-    font-size: .78rem;
-}
-
-/* ============================
-   Divider
-   ============================ */
-.erp-divider {
-    height: 1px;
-    background: rgba(15,23,42,.08);
-    margin: 14px 0;
-}
-
-/* =================================================
-   ORDER DETAIL – TIMELINE (ICON STEPPER)
-   ================================================= */
 .erp-timeline {
     display: flex;
-    align-items: center;
     justify-content: space-between;
     gap: 12px;
     margin-top: 16px;
@@ -375,15 +166,20 @@ h1, h2, h3, h4, h5 {
         background: rgba(15,23,42,.10);
         display: grid;
         place-items: center;
-        margin: 0 auto 8px auto;
+        margin: 0 auto 8px;
         position: relative;
         z-index: 1;
     }
 
-        .erp-step .dot i {
-            font-size: 1rem;
-            opacity: .9;
-        }
+    .erp-step.active .dot {
+        background: rgba(0,82,204,.12);
+        box-shadow: 0 0 0 6px rgba(0,82,204,.10);
+    }
+
+    .erp-step.done .dot {
+        background: rgba(22,163,74,.12);
+        box-shadow: 0 0 0 6px rgba(22,163,74,.10);
+    }
 
     .erp-step .label {
         font-size: .78rem;
@@ -391,78 +187,34 @@ h1, h2, h3, h4, h5 {
         color: var(--erp-muted-2);
     }
 
-    .erp-step.active .dot {
-        background: rgba(0,82,204,.12);
-        box-shadow: 0 0 0 6px rgba(0,82,204,.10), inset 0 0 0 1px rgba(0,82,204,.25);
-    }
-
-        .erp-step.active .dot i {
-            color: var(--erp-primary);
-        }
-
-    .erp-step.done .dot {
-        background: rgba(22,163,74,.12);
-        box-shadow: 0 0 0 6px rgba(22,163,74,.10), inset 0 0 0 1px rgba(22,163,74,.25);
-    }
-
-        .erp-step.done .dot i {
-            color: var(--erp-success);
-        }
-
     .erp-step.active .label,
     .erp-step.done .label {
         color: rgba(15,23,42,.85);
     }
 
 /* ============================
-   Footer
-   ============================ */
-.erp-footer {
-    text-align: center;
-    padding: 1rem;
-    color: var(--erp-muted);
-    border-top: 1px solid rgba(15,23,42,.08);
-    background: rgba(255,255,255,.85);
-}
-
-/* ============================
-   Mobile
+   Mobile (OFF-CANVAS SIDEBAR)
    ============================ */
 @media (max-width: 768px) {
+    /* sidebar hidden by default */
+    .sidebar {
+        transform: translateX(-100%);
+    }
+
+    /* content full width */
     .erp-main {
         margin-left: 0;
+        max-height: none;
+        overflow: visible;
     }
 
-    body {
-        overflow-y: auto;
+    /* show when open */
+    body.sidebar-open .sidebar {
+        transform: translateX(0);
     }
 
-    .erp-step .label {
-        font-size: .72rem;
-    }
-}
-
-/* ============================
-   Print
-   ============================ */
-@media print {
-    .sidebar,
-    .erp-topbar,
-    .erp-actions,
-    .btn {
-        display: none !important;
-    }
-
-    body {
-        background: #fff;
-    }
-
-    .erp-main {
-        margin: 0 !important;
-    }
-
-    .erp-card {
-        box-shadow: none !important;
-        border: 1px solid #ddd;
+    body.sidebar-open #sidebar-overlay.sidebar-overlay {
+        opacity: 1;
+        pointer-events: auto;
     }
 }
