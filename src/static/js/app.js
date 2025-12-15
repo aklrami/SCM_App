@@ -24,9 +24,7 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   function toggleSidebar(e) {
-    // prevent weird double-trigger on mobile
     if (e) e.preventDefault();
-
     if (document.body.classList.contains("sidebar-open")) closeSidebar();
     else openSidebar();
   }
@@ -36,7 +34,7 @@ document.addEventListener("DOMContentLoaded", () => {
     toggleBtn.addEventListener("click", toggleSidebar, { passive: false });
   }
 
-  // Overlay click closes (this should work once CSS is correct)
+  // Overlay click closes
   if (overlay) {
     overlay.addEventListener("click", closeSidebar);
     overlay.addEventListener("touchstart", closeSidebar, { passive: true });
@@ -49,7 +47,7 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  // ESC closes
+  // ESC closes sidebar
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") closeSidebar();
   });
@@ -69,11 +67,23 @@ document.addEventListener("DOMContentLoaded", () => {
     const clickedInsideSidebar = sidebar.contains(e.target);
     const clickedOverlay = e.target.closest("#sidebar-overlay");
 
-    // If overlay exists and was clicked, overlay handler will close it
     if (clickedOverlay) return;
 
     if (!clickedInsideSidebar && !clickedToggle) {
       closeSidebar();
+    }
+  });
+
+  // Ctrl+K focuses the global search (like real dashboards)
+  document.addEventListener("keydown", (e) => {
+    const isCmdK = (e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k";
+    if (!isCmdK) return;
+
+    const search = document.querySelector(".erp-search input");
+    if (search) {
+      e.preventDefault();
+      search.focus();
+      if (typeof search.select === "function") search.select();
     }
   });
 

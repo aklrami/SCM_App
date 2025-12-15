@@ -78,7 +78,7 @@
   <div class="row g-3 mt-2">
     {% if current_user.role == "admin" %}
       <div class="col-12 col-md-4">
-        <div class="erp-card kpi">
+        <div class="erp-card erp-kpi kpi">
           <div class="kpi-row">
             <div>
               <div class="kpi-label">Total Users</div>
@@ -92,7 +92,7 @@
       </div>
 
       <div class="col-12 col-md-4">
-        <div class="erp-card kpi">
+        <div class="erp-card erp-kpi kpi">
           <div class="kpi-row">
             <div>
               <div class="kpi-label">Total Products</div>
@@ -106,7 +106,7 @@
       </div>
 
       <div class="col-12 col-md-4">
-        <div class="erp-card kpi warning">
+        <div class="erp-card erp-kpi kpi warning">
           <div class="kpi-row">
             <div>
               <div class="kpi-label">Pending Orders</div>
@@ -122,7 +122,7 @@
 
     {% if current_user.role == "supplier" %}
       <div class="col-12 col-md-6">
-        <div class="erp-card kpi">
+        <div class="erp-card erp-kpi kpi">
           <div class="kpi-row">
             <div>
               <div class="kpi-label">Your Products</div>
@@ -136,7 +136,7 @@
       </div>
 
       <div class="col-12 col-md-6">
-        <div class="erp-card kpi">
+        <div class="erp-card erp-kpi kpi">
           <div class="kpi-row">
             <div>
               <div class="kpi-label">Orders with Your Products</div>
@@ -152,7 +152,7 @@
 
     {% if current_user.role == "user" %}
       <div class="col-12 col-md-6">
-        <div class="erp-card kpi">
+        <div class="erp-card erp-kpi kpi">
           <div class="kpi-row">
             <div>
               <div class="kpi-label">Your Orders</div>
@@ -166,7 +166,7 @@
       </div>
 
       <div class="col-12 col-md-6">
-        <div class="erp-card kpi">
+        <div class="erp-card erp-kpi kpi">
           <div class="kpi-row">
             <div>
               <div class="kpi-label">Browse Products</div>
@@ -184,7 +184,7 @@
   <!-- Executive widgets row -->
   <div class="row g-3 mt-1">
 
-    <!-- Quick actions -->
+    <!-- Quick actions + Risk & insights (FIXED grid) -->
     <div class="col-12 col-xl-4">
       <div class="erp-card">
         <div class="erp-cardhead">
@@ -208,28 +208,29 @@
           </div>
         </div>
       </div>
-    </div>
-<div class="erp-card mt-3">
-  <div class="erp-cardhead">
-    <div class="erp-cardtitle"><i class="bi bi-activity me-2"></i>Risk & insights</div>
-  </div>
-  <div class="erp-cardbody">
-    <div class="d-flex justify-content-between mb-2">
-      <div class="text-muted small">Low-stock items</div>
-      <div class="fw-semibold">{{ (low_stock|length) if low_stock else 0 }}</div>
-    </div>
-    <div class="d-flex justify-content-between mb-2">
-      <div class="text-muted small">Pending orders</div>
-      <div class="fw-semibold">{{ stats.pending_orders if stats and current_user.role=="admin" else "—" }}</div>
-    </div>
-    <div class="erp-divider"></div>
-    <div class="text-muted small">
-      Tip: Keep reorder levels aligned with demand to reduce stockout risk.
-    </div>
-  </div>
-</div>
 
-    <!-- Low stock -->
+      <div class="erp-card mt-3">
+        <div class="erp-cardhead">
+          <div class="erp-cardtitle"><i class="bi bi-activity me-2"></i>Risk & insights</div>
+        </div>
+        <div class="erp-cardbody">
+          <div class="d-flex justify-content-between mb-2">
+            <div class="text-muted small">Low-stock items</div>
+            <div class="fw-semibold">{{ (low_stock|length) if low_stock else 0 }}</div>
+          </div>
+          <div class="d-flex justify-content-between mb-2">
+            <div class="text-muted small">Pending orders</div>
+            <div class="fw-semibold">{{ stats.pending_orders if stats and current_user.role=="admin" else "—" }}</div>
+          </div>
+          <div class="erp-divider"></div>
+          <div class="text-muted small">
+            Tip: Keep reorder levels aligned with demand to reduce stockout risk.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Low stock OR Latest orders (role-aware) -->
     {% if current_user.role in ['admin','supplier'] %}
     <div class="col-12 col-xl-8">
       <div class="erp-card">
@@ -285,7 +286,6 @@
       </div>
     </div>
     {% else %}
-    <!-- If user role, show latest orders here -->
     <div class="col-12 col-xl-8">
       <div class="erp-card">
         <div class="erp-cardhead d-flex align-items-center justify-content-between">

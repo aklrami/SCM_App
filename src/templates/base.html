@@ -21,7 +21,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
   <!-- Custom Modern CSS -->
-  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom_modern.css') }}?v=6">
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/custom_modern.css') }}?v=7">
 
   {% block head_extra %}{% endblock %}
 </head>
@@ -185,7 +185,7 @@
       </ul>
     </nav>
 
-    <!-- ✅ IMPORTANT: overlay MUST be INSIDE layout-wrapper and AFTER sidebar -->
+    <!-- Overlay (mobile sidebar) -->
     <div id="sidebar-overlay" class="sidebar-overlay" aria-hidden="true"></div>
 
     <!-- Main -->
@@ -193,7 +193,7 @@
 
       <!-- Topbar (sticky) -->
       <header class="erp-topbar" role="banner">
-        <div class="topbar-left">
+        <div class="topbar-left d-flex align-items-center gap-2">
           <button id="mobile-menu-toggle"
                   class="btn btn-sm btn-light erp-icon-btn d-inline-flex d-md-none"
                   type="button"
@@ -213,7 +213,7 @@
           </div>
         </div>
 
-        <div class="topbar-center">
+        <div class="topbar-center d-flex align-items-center flex-grow-1 justify-content-center">
           {% set _search_action =
               url_for('frontend.shop_products')
               if request.endpoint in ['frontend.shop_products','frontend.view_cart']
@@ -230,7 +230,7 @@
           </form>
         </div>
 
-        <div class="topbar-right">
+        <div class="topbar-right d-flex align-items-center gap-2">
           {% if current_user.is_authenticated %}
 
             {% set notif_count = notif_count|default(0) %}
@@ -333,6 +333,7 @@
           <span>SCM Pro &copy; {{ current_year if current_year else 2025 }} • Enterprise UI Upgrade</span>
         </div>
       </footer>
+
     </div>
   </div>
 
@@ -348,7 +349,7 @@
   <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
 
   <!-- Custom JS -->
-  <script src="{{ url_for('static', filename='js/app.js') }}?v=6"></script>
+  <script src="{{ url_for('static', filename='js/app.js') }}?v=7"></script>
 
   {% block scripts_extra %}{% endblock %}
 </body>
