@@ -1,22 +1,32 @@
 /*
 Modern CSS for Supply Chain Management Project
-Inspired by SolDevelo and modern UI/UX best practices.
+Inspired by modern UI/UX best practices.
 
-Color Palette:
-- Primary Blue: #0052CC (e.g., headers, primary buttons)
-- Lighter Blue: #007BFF (e.g., links, secondary actions)
-- Dark Gray (Text): #343a40
-- Medium Gray (Borders, Subtle Text): #6c757d
-- Light Gray (Backgrounds, Cards): #f8f9fa
-- Accent Green (Success): #28a745
-- Accent Yellow (Warning): #ffc107
-- Accent Red (Error): #dc3545
+Palette:
+- Primary Blue: #0052CC
+- Lighter Blue: #007BFF
+- Dark Gray: #343a40
+- Medium Gray: #6c757d
+- Light Gray: #f8f9fa
+- Green: #28a745
+- Yellow: #ffc107
+- Red: #dc3545
 - White: #FFFFFF
 */
 
 /* ============================
-   General Resets & Body Styling
+   Base / Resets
    ============================ */
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+}
+
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
     font-size: 16px;
@@ -25,19 +35,18 @@ body {
     background-color: #FFFFFF;
     margin: 0;
     padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow-y: hidden; /* main-content will scroll */
-    overflow-x: hidden; /* prevent horizontal scroll */
+    /* Desktop layout: sidebar fixed + main scroll */
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
-/* Wrapper for sidebar + main content (desktop) */
+/* Wrapper for sidebar + content */
 .layout-wrapper {
     display: flex;
     min-height: 100vh;
 }
 
+/* Optional container helper */
 .container {
     width: 90%;
     max-width: 1200px;
@@ -45,51 +54,13 @@ body {
     padding: 20px;
 }
 
-/* =====================
-   Topbar (mobile header)
-   ===================== */
-
-/* Hidden on desktop by default; shown on mobile via media query */
-.topbar {
-    display: none;
-    align-items: center;
-    justify-content: flex-start;
-    padding: 0 1rem;
-    height: 56px;
-    background-color: #343a40;
-    color: #fff;
-    z-index: 1050;
-}
-
-.topbar-menu-btn {
-    border: none;
-    background: none;
-    color: #fff;
-    font-size: 1.6rem;
-    line-height: 1;
-    margin-right: 0.75rem;
-    cursor: pointer;
-}
-
-.topbar-brand {
-    color: #fff;
-    text-decoration: none;
-    font-weight: 500;
-    font-size: 1rem;
-}
-
-/* Overlay for mobile sidebar */
-.sidebar-overlay {
-    display: none;
-}
-
-/* ===============
+/* ============================
    Typography
-   =============== */
+   ============================ */
 h1, h2, h3, h4, h5, h6 {
     color: #0052CC;
-    margin-top: 1.5rem;
-    margin-bottom: 1rem;
+    margin-top: 1.25rem;
+    margin-bottom: 0.75rem;
     font-weight: 600;
 }
 
@@ -109,9 +80,9 @@ h4 {
     font-size: 1.25rem;
 }
 
-/* ===============
+/* ============================
    Links
-   =============== */
+   ============================ */
 a {
     color: #007BFF;
     text-decoration: none;
@@ -123,214 +94,74 @@ a {
         text-decoration: underline;
     }
 
-/* ===============
+/* ============================
    Buttons
-   =============== */
+   ============================ */
 .btn {
-    display: inline-block;
-    font-weight: 400;
-    text-align: center;
-    vertical-align: middle;
-    user-select: none;
-    background-color: transparent;
-    border: 1px solid transparent;
-    padding: 0.5rem 1rem;
-    font-size: 1rem;
-    line-height: 1.5;
-    border-radius: 0.25rem;
-    transition: all 0.2s ease-in-out;
-    cursor: pointer;
+    transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
     .btn:hover {
         transform: translateY(-2px);
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        box-shadow: 0 4px 10px rgba(0,0,0,0.12);
     }
 
-.btn-primary {
-    color: #fff;
-    background-color: #0052CC;
-    border-color: #0052CC;
+.btn-link:hover {
+    transform: none;
+    box-shadow: none;
 }
 
-    .btn-primary:hover {
-        background-color: #0041a3;
-        border-color: #003b94;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-
-.btn-secondary {
-    color: #fff;
-    background-color: #6c757d;
-    border-color: #6c757d;
-}
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-        border-color: #545b62;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-.btn-success {
-    color: #fff;
-    background-color: #28a745;
-    border-color: #28a745;
-}
-
-    .btn-success:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-.btn-danger {
-    color: #fff;
-    background-color: #dc3545;
-    border-color: #dc3545;
-}
-
-    .btn-danger:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-.btn-warning {
-    color: #212529;
-    background-color: #ffc107;
-    border-color: #ffc107;
-}
-
-    .btn-warning:hover {
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-
-.btn-link {
-    font-weight: 400;
-    color: #007BFF;
-    text-decoration: none;
-}
-
-    .btn-link:hover {
-        text-decoration: underline;
-        transform: none;
-        box-shadow: none;
-    }
-
-/* ===============
+/* ============================
    Forms
-   =============== */
-.form-control {
-    display: block;
-    width: 100%;
-    padding: 0.5rem 0.75rem;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: #495057;
-    background-color: #fff;
-    background-clip: padding-box;
-    border: 1px solid #ced4da;
-    border-radius: 0.25rem;
+   ============================ */
+.form-control,
+.form-select {
     box-sizing: border-box;
-    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
 }
 
-    .form-control:focus {
-        color: #495057;
-        background-color: #fff;
-        border-color: #80bdff;
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
-    }
-
-.form-group {
-    margin-bottom: 1rem;
-}
-
-label {
-    display: inline-block;
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-}
-
-/* ===============
+/* ============================
    Cards
-   =============== */
+   ============================ */
 .card {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    min-width: 0;
-    word-wrap: break-word;
-    background-color: #fff;
-    background-clip: border-box;
-    border: 1px solid rgba(0, 0, 0, 0.125);
-    border-radius: 0.25rem;
-    margin-bottom: 1.5rem;
+    border-radius: 0.35rem;
     box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
     transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
 }
 
     .card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.15);
+        transform: translateY(-3px);
+        box-shadow: 0 0.5rem 1rem rgba(0,0,0,0.12);
     }
 
 .card-header {
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 0;
     background-color: #f8f9fa;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.125);
-    font-size: 1.2rem;
-    font-weight: 500;
     color: #0052CC;
+    font-weight: 600;
 }
 
-.card-body {
-    flex: 1 1 auto;
-    padding: 1.25rem;
-}
-
-.card-footer {
-    padding: 0.75rem 1.25rem;
-    background-color: rgba(0,0,0,0.03);
-    border-top: 1px solid rgba(0,0,0,0.125);
-}
-
-/* ===============
+/* ============================
    Tables
-   =============== */
-.table {
-    width: 100%;
-    margin-bottom: 1rem;
-    color: #212529;
-    border-collapse: collapse;
-}
-
-    .table th,
-    .table td {
-        padding: 0.75rem;
-        vertical-align: top;
-        border-top: 1px solid #dee2e6;
-    }
-
-    .table thead th {
-        vertical-align: bottom;
-        border-bottom: 2px solid #dee2e6;
-        background-color: #f8f9fa;
-        color: #0052CC;
-        font-weight: 600;
-    }
-
-.table-striped tbody tr:nth-of-type(odd) {
-    background-color: rgba(0, 0, 0, 0.03);
+   ============================ */
+.table thead th {
+    background-color: #f8f9fa;
+    color: #0052CC;
+    font-weight: 700;
 }
 
 .table-hover tbody tr:hover {
-    color: #212529;
-    background-color: rgba(0, 123, 255, 0.075);
+    background-color: rgba(0, 123, 255, 0.06);
 }
 
-/* =====================
-   Navigation / Sidebar
-   ===================== */
+/* ============================
+   Alerts (Bootstrap already does most)
+   ============================ */
+.alert {
+    animation: slideInDown 0.25s ease-out;
+}
+
+/* ============================
+   Sidebar (Desktop)
+   ============================ */
 .sidebar {
     width: 250px;
     background-color: #343a40;
@@ -341,18 +172,20 @@ label {
     top: 0;
     left: 0;
     overflow-y: auto;
-    box-shadow: 2px 0 5px rgba(0,0,0,0.1);
+    box-shadow: 2px 0 6px rgba(0,0,0,0.12);
     z-index: 1000;
 }
 
+    .sidebar-logo a,
     .sidebar h3 a {
-        transition: color 0.2s ease-in-out;
         color: #fff;
         text-decoration: none;
     }
 
+        .sidebar-logo a:hover,
         .sidebar h3 a:hover {
             color: #00BFFF;
+            text-decoration: none;
         }
 
     .sidebar ul {
@@ -365,7 +198,6 @@ label {
             color: #adb5bd;
             padding: 10px 15px;
             display: block;
-            text-decoration: none;
             border-radius: 0.25rem;
             transition: background-color 0.2s ease-in-out, color 0.2s ease-in-out, padding-left 0.2s ease-in-out;
         }
@@ -375,6 +207,7 @@ label {
                 background-color: #0052CC;
                 color: #fff;
                 padding-left: 20px;
+                text-decoration: none;
             }
 
             .sidebar ul li a i {
@@ -383,164 +216,38 @@ label {
 
             .sidebar ul li a:hover i,
             .sidebar ul li a.active i {
-                transform: scale(1.1);
+                transform: scale(1.08);
             }
 
-/* =====================
-   Main Content Area
-   ===================== */
+/* ============================
+   Main Content (Desktop)
+   ============================ */
 .main-content {
-    margin-left: 250px; /* same as sidebar width */
+    margin-left: 250px; /* same as sidebar */
     padding: 20px;
     flex-grow: 1;
-    animation: fadeIn 0.5s ease-in-out;
     overflow-y: auto; /* scroll inside content */
     max-height: 100vh;
 }
 
-/* =====================
-   Header (optional)
-   ===================== */
-.header {
-    background-color: #fff;
-    padding: 1rem;
-    border-bottom: 1px solid #dee2e6;
-    box-shadow: 0 0.125rem 0.25rem rgba(0,0,0,0.075);
-}
-
-/* =====================
-   Footer
-   ===================== */
+/* Footer */
 .footer {
     background-color: #f8f9fa;
     color: #6c757d;
     padding: 1rem;
     text-align: center;
     border-top: 1px solid #dee2e6;
-    margin-top: auto;
 }
 
-/* =====================
-   Utility Classes
-   ===================== */
-.text-center {
-    text-align: center;
-}
-
-.mt-1 {
-    margin-top: 0.25rem !important;
-}
-
-.mt-2 {
-    margin-top: 0.5rem !important;
-}
-
-.mt-3 {
-    margin-top: 1rem !important;
-}
-
-.mb-1 {
-    margin-bottom: 0.25rem !important;
-}
-
-.mb-2 {
-    margin-bottom: 0.5rem !important;
-}
-
-.mb-3 {
-    margin-bottom: 1rem !important;
-}
-
-.p-1 {
-    padding: 0.25rem !important;
-}
-
-.p-2 {
-    padding: 0.5rem !important;
-}
-
-.p-3 {
-    padding: 1rem !important;
-}
-
-/* =====================
-   Alerts
-   ===================== */
-.alert {
-    position: relative;
-    padding: 0.75rem 1.25rem;
-    margin-bottom: 1rem;
-    border: 1px solid transparent;
-    border-radius: 0.25rem;
-    animation: slideInDown 0.3s ease-out;
-}
-
-.alert-success {
-    color: #155724;
-    background-color: #d4edda;
-    border-color: #c3e6cb;
-}
-
-.alert-danger {
-    color: #721c24;
-    background-color: #f8d7da;
-    border-color: #f5c6cb;
-}
-
-.alert-warning {
-    color: #856404;
-    background-color: #fff3cd;
-    border-color: #ffeeba;
-}
-
-.alert-info {
-    color: #0c5460;
-    background-color: #d1ecf1;
-    border-color: #bee5eb;
-}
-
-/* =====================
-   Animations
-   ===================== */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
-
-@keyframes slideInDown {
-    from {
-        transform: translateY(-20px);
-        opacity: 0;
-    }
-
-    to {
-        transform: translateY(0);
-        opacity: 1;
-    }
-}
-
-/* =====================
-   Dashboard Cards
-   ===================== */
+/* ============================
+   Dashboard helpers
+   ============================ */
 .dashboard-card .card-body {
     transition: background-color 0.3s ease;
 }
 
 .dashboard-card:hover .card-body {
-    background-color: rgba(0,0,0,0.03);
-}
-
-.dashboard-card .card-title {
-    transition: color 0.3s ease;
-}
-
-.dashboard-card:hover .card-title {
-    color: #0052CC;
+    background-color: rgba(0,0,0,0.02);
 }
 
 .dashboard-card .card-text a {
@@ -553,52 +260,100 @@ label {
     }
 
 /* ============================
-   Mobile hamburger layout
+   Mobile header + overlay (hidden on desktop)
+   ============================ */
+.mobile-header {
+    display: none;
+}
+
+.sidebar-overlay {
+    display: none;
+}
+
+/* ============================
+   Responsive
    ============================ */
 
-@media (max-width: 768px) {
-
-    /* Enable normal page scrolling on mobile */
-    body {
-        display: block;
-        height: auto;
-        overflow-y: auto;
-        overflow-x: hidden;
+/* Medium screens: slightly narrower sidebar */
+@media (max-width: 992px) {
+    .sidebar {
+        width: 220px;
     }
 
-    /* Show topbar (hamburger + brand) only on mobile */
-    .topbar {
-        display: flex;
+    .main-content {
+        margin-left: 220px;
+    }
+}
+
+/* Phones: off-canvas sidebar + top header */
+@media (max-width: 768px) {
+
+    /* Let the page scroll naturally on phones */
+    body {
+        overflow-y: auto;
+        padding-top: 56px; /* space for mobile header */
+    }
+
+    /* Show mobile header */
+    .mobile-header {
         position: fixed;
         top: 0;
         left: 0;
         right: 0;
+        height: 56px;
+        background-color: #343a40;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        padding: 0 1rem;
+        z-index: 1050;
     }
 
-    /* Push content below the topbar */
-    body {
-        padding-top: 56px; /* height of .topbar */
+    .mobile-menu-btn {
+        background: none;
+        border: none;
+        color: #fff;
+        font-size: 1.6rem;
+        line-height: 1;
+        margin-right: 0.75rem;
+        cursor: pointer;
     }
 
+    .mobile-brand {
+        color: #fff;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+        .mobile-brand:hover {
+            text-decoration: none;
+            color: #fff;
+        }
+
+    /* wrapper should not enforce flex height on mobile */
     .layout-wrapper {
         display: block;
+        min-height: auto;
     }
 
-    /* Sidebar becomes off-canvas drawer */
+    /* Sidebar becomes a drawer */
     .sidebar {
-        top: 56px; /* under topbar */
+        top: 56px; /* below header */
         height: calc(100vh - 56px);
+        width: 260px;
         transform: translateX(-100%);
         transition: transform 0.25s ease-in-out;
-        width: 260px;
+        position: fixed; /* keep it sliding */
+        left: 0;
         z-index: 1040;
     }
 
-    /* Overlay behind sidebar */
+    /* overlay behind sidebar */
     .sidebar-overlay {
         position: fixed;
-        inset: 56px 0 0 0; /* below topbar */
-        background: rgba(0, 0, 0, 0.4);
+        inset: 56px 0 0 0; /* below header */
+        background: rgba(0, 0, 0, 0.45);
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.2s ease-in-out;
@@ -606,7 +361,7 @@ label {
         z-index: 1030;
     }
 
-    /* When body has .sidebar-open, show menu + overlay */
+    /* Open state */
     body.sidebar-open .sidebar {
         transform: translateX(0);
     }
@@ -616,28 +371,41 @@ label {
         pointer-events: auto;
     }
 
-    /* Main content full width on mobile */
+    /* Content becomes full width */
     .main-content {
         margin-left: 0;
         padding: 0.75rem;
-        height: auto;
         max-height: none;
         overflow: visible;
     }
 
-    .footer {
-        padding: 0.5rem;
-        font-size: 0.8rem;
-        text-align: center;
-    }
-
-    /* Slightly smaller tables for mobile */
+    /* Slightly smaller table text */
     table {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
     }
 
         table th,
         table td {
-            padding: 0.4rem;
+            padding: 0.45rem;
         }
+
+    .footer {
+        padding: 0.75rem;
+        font-size: 0.9rem;
+    }
+}
+
+/* ============================
+   Animations
+   ============================ */
+@keyframes slideInDown {
+    from {
+        transform: translateY(-12px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
