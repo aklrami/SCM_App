@@ -543,4 +543,120 @@ a {
         box-shadow: none !important;
         border: 1px solid #ddd;
     }
+
+
+    .sidebar-nav,
+    .sidebar-nav li {
+        list-style: none !important;
+        margin: 0;
+        padding-left: 0 !important;
+    }
+
+        .sidebar-nav li::marker {
+            content: "" !important;
+        }
+
+        .sidebar-nav a {
+            text-decoration: none !important;
+        }
+
+    /* 2) Better page spacing + reduce “empty white” feeling */
+    .erp-page {
+        padding-top: 18px;
+        padding-bottom: 22px;
+    }
+
+    /* 3) Make default headings look like an ERP module */
+    main h1, main h2, main h3 {
+        font-weight: 900;
+        letter-spacing: -0.3px;
+    }
+
+    main h2 {
+        font-size: 1.35rem;
+        margin-top: 0.2rem;
+        margin-bottom: 1rem;
+    }
+
+    /* 4) Replace “thin lines” with softer separators */
+    hr {
+        border: 0;
+        height: 1px;
+        background: rgba(15,23,42,.08);
+        opacity: 1;
+    }
+
+    /* 5) Form sections: give them card look automatically */
+    main form {
+        background: #fff;
+        border: 1px solid rgba(15,23,42,.08);
+        border-radius: 18px;
+        box-shadow: 0 14px 34px rgba(15,23,42,.08);
+        padding: 18px;
+    }
+
+        /* If you have multiple forms per page, don’t over-card tiny ones */
+        main form.d-inline,
+        main form.d-inline-block,
+        main form[style*="display: inline"] {
+            background: transparent;
+            border: 0;
+            box-shadow: none;
+            padding: 0;
+        }
+
+    /* 6) Inputs look “enterprise” */
+    .form-control,
+    .form-select,
+    textarea.form-control {
+        border-radius: 14px;
+        border: 1px solid rgba(15,23,42,.14);
+        padding: 10px 12px;
+    }
+
+        .form-control:focus,
+        .form-select:focus,
+        textarea.form-control:focus {
+            border-color: rgba(0,82,204,.45);
+            box-shadow: 0 0 0 .2rem rgba(0,82,204,.12);
+        }
+
+    /* 7) Primary actions (Place Order) should look premium */
+    .btn-primary {
+        border-radius: 14px;
+        font-weight: 800;
+        letter-spacing: .2px;
+        padding: 10px 14px;
+        box-shadow: 0 14px 30px rgba(0,82,204,.18);
+    }
+
+        .btn-primary:hover {
+            box-shadow: 0 18px 40px rgba(0,82,204,.22);
+        }
+
+    /* 8) Make “Current Cart” look like a real summary panel */
+    main .card,
+    main .erp-card {
+        border-radius: 18px;
+        border: 1px solid rgba(15,23,42,.08);
+        box-shadow: 0 14px 34px rgba(15,23,42,.08);
+    }
+
+    /* If your cart summary is inside a column with a heading */
+    main h2 + .card,
+    main h2 + .erp-card {
+        margin-top: 10px;
+    }
+
+    /* 9) Cart totals row */
+    main strong,
+    main .fw-bold {
+        letter-spacing: -0.2px;
+    }
+
+    /* 10) Make “Clear Cart” look less childish */
+    .btn-warning {
+        border-radius: 14px;
+        font-weight: 800;
+    }
 }
